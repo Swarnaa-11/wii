@@ -3,720 +3,2027 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>MotionPlay</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
-:root{--bg:#1b1830;--panel:#2a2650;--ink:#f6f1e7;--mute:#aaa6c9;--ok:#2ec4b6}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0}
-body{background:var(--bg);color:var(--ink);font-family:Fredoka,"Trebuchet MS",sans-serif;overflow:hidden;-webkit-user-select:none;user-select:none}
-.scr{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;text-align:center}
-.scr.on{display:flex}
-h1{font-size:clamp(40px,8vw,96px);margin:0;letter-spacing:-2px}
-button{font:inherit;font-weight:600;font-size:20px;border:0;border-radius:18px;padding:14px 28px;background:var(--ink);color:var(--bg);cursor:pointer}
-button.alt{background:var(--panel);color:var(--ink)}
-button:disabled{opacity:.35}
-input{font:inherit;font-size:22px;padding:14px;border-radius:14px;border:2px solid var(--panel);background:#fff1;color:var(--ink);width:min(320px,90vw);text-align:center}
-.row{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
-.card{background:var(--panel);border-radius:22px;padding:20px 26px}
-#qr{background:#fff;padding:12px;border-radius:16px}
-.pin{font-size:64px;font-weight:700;letter-spacing:10px}
-.pl{display:flex;gap:12px;align-items:center;background:var(--panel);border-radius:16px;padding:10px 16px;min-width:260px}
-.dot{width:26px;height:26px;border-radius:50%}
-.off{opacity:.4}
-.x{margin-left:auto;padding:4px 12px;font-size:16px}
-canvas{width:100vw;height:100vh;position:fixed;inset:0;display:block}
-#hud{position:fixed;top:12px;left:0;right:0;font-size:36px;font-weight:700;pointer-events:none}
-.big{font-size:min(30vw,260px);font-weight:700}
-#pad{display:none;gap:12px;width:100%;flex:1}
-#pad button{flex:1;font-size:40px;border-radius:24px;touch-action:none}
-#ph{touch-action:none}
-@keyframes pop{from{transform:scale(.3);opacity:0}to{transform:none;opacity:1}}
-@keyframes bob{50%{transform:translateY(-8px) rotate(6deg)}}
-@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
-.gc{background:var(--panel);border-radius:22px;padding:16px;width:220px;border:4px solid transparent;cursor:pointer;display:flex;flex-direction:column;gap:6px}
-.gc.sel{border-color:var(--c)}
-.gc .ic{font-size:56px;animation:bob 2s infinite}
-.gc small{color:var(--mute)}
-.cf{position:fixed;top:-30px;font-size:28px;animation:fall 3.5s linear forwards;pointer-events:none;z-index:20}
+:root {
+  --bg:#1b1830;
+  --panel:#2a2650;
+  --ink:#f6f1e7;
+  --mute:#aaa6c9;
+  --ok:#2ec4b6;
+}
+
+* {
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,body {
+  width:100%;
+  height:100%;
+  margin:0;
+  overflow:hidden;
+}
+
+body {
+  background:var(--bg);
+  color:var(--ink);
+  font-family:Fredoka,"Trebuchet MS",sans-serif;
+  user-select:none;
+  -webkit-user-select:none;
+  touch-action:manipulation;
+}
+
+.scr {
+  position:fixed;
+  inset:0;
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+  padding:24px;
+  text-align:center;
+  overflow:auto;
+}
+
+.scr.on {
+  display:flex;
+}
+
+h1 {
+  font-size:clamp(40px,8vw,96px);
+  margin:0;
+  letter-spacing:-2px;
+}
+
+button {
+  font:inherit;
+  font-weight:600;
+  font-size:20px;
+  border:0;
+  border-radius:18px;
+  padding:14px 24px;
+  background:var(--ink);
+  color:var(--bg);
+  cursor:pointer;
+  touch-action:none;
+}
+
+button.alt {
+  background:var(--panel);
+  color:var(--ink);
+}
+
+button:disabled {
+  opacity:.35;
+}
+
+input {
+  font:inherit;
+  font-size:22px;
+  padding:14px;
+  border-radius:14px;
+  border:2px solid var(--panel);
+  background:#fff1;
+  color:var(--ink);
+  width:min(320px,90vw);
+  text-align:center;
+}
+
+.row {
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+.card {
+  background:var(--panel);
+  border-radius:22px;
+  padding:20px 26px;
+}
+
+#qr {
+  background:white;
+  padding:12px;
+  border-radius:16px;
+}
+
+.pin {
+  font-size:64px;
+  font-weight:700;
+  letter-spacing:10px;
+}
+
+.pl {
+  display:flex;
+  gap:12px;
+  align-items:center;
+  background:var(--panel);
+  border-radius:16px;
+  padding:10px 16px;
+  min-width:260px;
+}
+
+.dot {
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  flex-shrink:0;
+}
+
+.off {
+  opacity:.4;
+}
+
+.x {
+  margin-left:auto;
+  padding:4px 12px;
+  font-size:16px;
+}
+
+canvas {
+  width:100vw;
+  height:100vh;
+  position:fixed;
+  inset:0;
+  display:block;
+}
+
+#hud {
+  position:fixed;
+  top:12px;
+  left:0;
+  right:0;
+  font-size:32px;
+  font-weight:700;
+  pointer-events:none;
+  z-index:3;
+}
+
+.big {
+  font-size:min(30vw,260px);
+  font-weight:700;
+}
+
+.gc {
+  background:var(--panel);
+  border-radius:22px;
+  padding:16px;
+  width:220px;
+  border:4px solid transparent;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.gc.sel {
+  border-color:var(--c);
+}
+
+.gc .ic {
+  font-size:56px;
+}
+
+.gc small {
+  color:var(--mute);
+}
+
+.cf {
+  position:fixed;
+  top:-30px;
+  font-size:28px;
+  animation:fall 3.5s linear forwards;
+  pointer-events:none;
+  z-index:20;
+}
+
+@keyframes pop {
+  from {transform:scale(.3);opacity:0}
+  to {transform:none;opacity:1}
+}
+
+@keyframes fall {
+  to {transform:translateY(110vh) rotate(720deg)}
+}
+
+/* PHONE CONTROLLER */
+
+#p-main {
+  justify-content:flex-start;
+  gap:12px;
+  padding:
+    max(14px,env(safe-area-inset-top))
+    16px
+    max(14px,env(safe-area-inset-bottom));
+  overflow:hidden;
+}
+
+#p-top {
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+#p-identity {
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+#p-who {
+  margin:0;
+  font-size:20px;
+}
+
+#p-stat {
+  font-size:16px;
+  color:var(--mute);
+}
+
+#p-help {
+  color:var(--mute);
+  font-size:14px;
+  min-height:20px;
+}
+
+#p-controls {
+  width:100%;
+  flex:1;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:14px;
+}
+
+.controller-layout {
+  display:none;
+  width:100%;
+  height:100%;
+  min-height:220px;
+  gap:12px;
+  align-items:center;
+  justify-content:space-around;
+}
+
+.controller-layout.active {
+  display:flex;
+}
+
+.ctrl-group {
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  align-items:center;
+  justify-content:center;
+}
+
+.ctrl-label {
+  color:var(--mute);
+  font-size:12px;
+  letter-spacing:1px;
+}
+
+.ctrl-btn {
+  width:66px;
+  height:66px;
+  border-radius:20px;
+  background:#39345f;
+  color:white;
+  font-size:27px;
+  padding:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:2px solid #ffffff18;
+  touch-action:none;
+}
+
+.ctrl-btn:active,
+.ctrl-btn.pressed {
+  background:#7167bd;
+  transform:scale(.94);
+}
+
+.dpad {
+  display:grid;
+  grid-template-columns:repeat(3,58px);
+  grid-template-rows:repeat(3,58px);
+  gap:5px;
+}
+
+.dpad .ctrl-btn {
+  width:58px;
+  height:58px;
+  border-radius:15px;
+}
+
+.action-grid {
+  display:grid;
+  grid-template-columns:repeat(2,68px);
+  gap:10px;
+}
+
+.action-grid .ctrl-btn {
+  border-radius:50%;
+}
+
+.ctrl-red {background:#a83b55}
+.ctrl-blue {background:#326db2}
+.ctrl-green {background:#278b65}
+.ctrl-yellow {background:#a57c28}
+
+#swipe-area {
+  display:none;
+  width:100%;
+  height:100%;
+  min-height:220px;
+  border:2px dashed #aaa6c966;
+  border-radius:24px;
+  background:#ffffff08;
+  position:relative;
+  touch-action:none;
+  overflow:hidden;
+}
+
+#swipe-area.active {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+#swipe-area span {
+  color:var(--mute);
+  font-size:20px;
+  pointer-events:none;
+}
+
+#p-controls button {
+  touch-action:none;
+}
+
+#p-fire {
+  width:100%;
+  flex:1;
+  font-size:48px;
+  border-radius:28px;
+  display:none;
+}
+
+#p-bottom {
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+}
+
+#p-bottom button {
+  font-size:15px;
+  padding:11px 15px;
+}
+
+#p-sens-wrap {
+  color:var(--mute);
+  font-size:12px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+#p-sens {
+  width:90px;
+}
+
+#p-ready {
+  background:var(--ok);
+  color:#102b30;
+}
+
+#p-cal {
+  gap:16px;
+}
+
+#p-cal h2 {
+  margin:0;
+}
+
+#p-touch-hint {
+  color:var(--mute);
+  font-size:13px;
+}
+
+/* RACING CONTROLLER */
+
+.trigger-row {
+  display:flex;
+  width:100%;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.trigger-row button {
+  flex:1;
+  min-height:65px;
+}
+
+.steer-row {
+  display:flex;
+  width:100%;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.steer-row .ctrl-btn {
+  width:85px;
+  height:85px;
+}
+
+#p-nitro {
+  width:85px;
+  height:85px;
+  border-radius:50%;
+  background:#236fb8;
+}
+
+/* HOST */
+
+#mute {
+  position:fixed;
+  top:10px;
+  right:10px;
+  z-index:9;
+  padding:6px 14px;
+  font-size:16px;
+}
+
+@media(max-width:600px) {
+  .scr {padding:14px}
+  .pin {font-size:48px}
+  .gc {width:160px;padding:12px}
+  .gc .ic {font-size:40px}
+}
 </style>
 </head>
 
 <body>
 
-<!-- HOST -->
-<button id="mute" class="alt" style="position:fixed;top:10px;right:10px;z-index:9;padding:6px 14px;font-size:16px">Sound on</button>
+<button id="mute" class="alt">Sound on</button>
+
+<!-- HOST HOME -->
 
 <div id="h-home" class="scr">
-<h1>MotionPlay</h1>
-<p style="color:var(--mute);margin:0">Your phone is the controller. This screen is the console.</p>
-<div class="card">
-<b>Motion Racer</b><br>
-<span style="color:var(--mute)">Tilt to steer. Dodge cones, grab coins. 45 seconds.</span>
+  <h1>MotionPlay</h1>
+
+  <p style="color:var(--mute);margin:0">
+    Your phone is the controller. This screen is the console.
+  </p>
+
+  <div class="card">
+    <b>Choose your game</b><br>
+    <span style="color:var(--mute)">
+      Connect your phones and play together.
+    </span>
+  </div>
+
+  <div id="picker" class="row"></div>
+
+  <div class="row">
+    <button id="b-single">Single player</button>
+    <button id="b-multi" class="alt">Multiplayer room</button>
+  </div>
+
+  <p id="cfgwarn" style="color:#ff8a8a"></p>
 </div>
-<div id="picker" class="row"></div>
-<div class="row">
-<button id="b-single">Single player</button>
-<button id="b-multi" class="alt">Multiplayer room</button>
-</div>
-<p id="cfgwarn" style="color:#ff8a8a"></p>
-</div>
+
+<!-- HOST LOBBY -->
 
 <div id="h-lobby" class="scr">
-<div class="row" style="align-items:center;gap:40px">
-<div id="qr"></div>
-<div>
-<div style="color:var(--mute)">Scan, or open the site and enter</div>
-<div class="pin" id="pin"></div>
-<div id="url" style="color:var(--mute);font-size:14px"></div>
-</div>
-</div>
-<div id="plist" class="row"></div>
-<div id="picker2" class="row"></div>
-<div class="row">
-<button id="b-start" disabled>Start game</button>
-<button id="b-close" class="alt">Close room</button>
-</div>
-<div id="lmsg" style="color:var(--mute)">Waiting for players. Everyone must press Ready.</div>
+  <div class="row" style="align-items:center;gap:40px">
+    <div id="qr"></div>
+
+    <div>
+      <div style="color:var(--mute)">Scan, or enter the PIN</div>
+      <div class="pin" id="pin"></div>
+      <div id="url" style="color:var(--mute);font-size:14px"></div>
+    </div>
+  </div>
+
+  <div id="plist" class="row"></div>
+  <div id="picker2" class="row"></div>
+
+  <div class="row">
+    <button id="b-start" disabled>Start game</button>
+    <button id="b-close" class="alt">Close room</button>
+  </div>
+
+  <div id="lmsg" style="color:var(--mute)">
+    Waiting for players. Everyone must press Ready.
+  </div>
 </div>
 
-<div id="h-count" class="scr"><div class="big" id="cnt">3</div></div>
+<div id="h-count" class="scr">
+  <div class="big" id="cnt">3</div>
+</div>
+
 <div id="h-game" class="scr" style="padding:0">
-<canvas id="cv"></canvas>
-<div id="hud"></div>
-</div>
-<div id="h-res" class="scr">
-<h1 id="win"></h1>
-<div id="rank" class="row"></div>
-<div class="row">
-<button id="b-again">Rematch</button>
-<button id="b-lobby" class="alt">Back to lobby</button>
-</div>
+  <canvas id="cv"></canvas>
+  <div id="hud"></div>
 </div>
 
-<!-- PHONE -->
-<div id="p-join" class="scr">
-<h1 style="font-size:44px">Join game</h1>
-<input id="p-pin" placeholder="Room PIN" maxlength="4" autocapitalize="characters">
-<input id="p-name" placeholder="Your name" maxlength="12">
-<button id="p-go">Join</button>
-<div id="p-err" style="color:#ff8a8a"></div>
+<div id="h-res" class="scr">
+  <h1 id="win"></h1>
+  <div id="rank" class="row"></div>
+
+  <div class="row">
+    <button id="b-again">Rematch</button>
+    <button id="b-lobby" class="alt">Back to lobby</button>
+  </div>
 </div>
+
+<!-- PHONE JOIN -->
+
+<div id="p-join" class="scr">
+  <h1 style="font-size:44px">Join game</h1>
+  <input id="p-pin" placeholder="Room PIN" maxlength="4">
+  <input id="p-name" placeholder="Your name" maxlength="12">
+  <button id="p-go">Join</button>
+  <div id="p-err" style="color:#ff8a8a"></div>
+</div>
+
+<!-- PHONE CALIBRATION -->
 
 <div id="p-cal" class="scr">
-<h2>Hold the phone upright, like a steering wheel</h2>
-<p style="color:var(--mute)">Then press Calibrate. You can recalibrate any time.</p>
-<button id="p-calbtn">Calibrate</button>
+  <h2>Calibrate your controller</h2>
+  <p style="color:var(--mute)">
+    Hold your phone comfortably. Press calibrate to set the neutral position.
+  </p>
+  <button id="p-calbtn">Calibrate</button>
+  <button id="p-skipcal" class="alt">Use touchscreen controls</button>
 </div>
 
-<div id="p-main" class="scr" style="justify-content:flex-start">
-<div class="dot" id="p-dot" style="width:70px;height:70px"></div>
-<h2 id="p-who" style="margin:0"></h2>
-<div id="p-stat" style="font-size:28px">Connected</div>
-<div id="p-help" style="color:var(--mute)">Tilt left and right to steer.</div>
-<button id="p-fire" style="display:none;width:100%;flex:1;font-size:48px;border-radius:28px">FIRE</button>
-<label style="color:var(--mute)">Sensitivity
-<input type="range" id="p-sens" min="50" max="200" value="100" style="width:140px">
-</label>
-<div class="row">
-<button id="p-ready">Ready</button>
-<button id="p-recal" class="alt">Recalibrate</button>
-</div>
-<div id="pad">
-<button class="alt" data-d="-1">◀</button>
-<button class="alt" data-d="1">▶</button>
-</div>
+<!-- PHONE CONTROLLER -->
+
+<div id="p-main" class="scr">
+
+  <div id="p-top">
+    <div id="p-identity">
+      <div class="dot" id="p-dot" style="width:42px;height:42px"></div>
+      <div style="text-align:left">
+        <h2 id="p-who">Player</h2>
+        <div id="p-stat">Connected</div>
+      </div>
+    </div>
+
+    <div id="p-touch-hint">CONTROLLER</div>
+  </div>
+
+  <div id="p-help">Waiting for game selection.</div>
+
+  <div id="p-controls">
+
+    <!-- DEFAULT TILT -->
+
+    <div class="controller-layout" id="layout-tilt">
+      <div class="ctrl-group">
+        <div class="ctrl-label">STEERING</div>
+        <div class="dpad">
+          <span></span>
+          <button class="ctrl-btn" data-control="up">↑</button>
+          <span></span>
+          <button class="ctrl-btn" data-control="left">←</button>
+          <button class="ctrl-btn" data-control="center">●</button>
+          <button class="ctrl-btn" data-control="right">→</button>
+          <span></span>
+          <button class="ctrl-btn" data-control="down">↓</button>
+          <span></span>
+        </div>
+      </div>
+      <button id="p-fire" class="ctrl-btn">FIRE</button>
+    </div>
+
+    <!-- FRUIT NINJA -->
+
+    <div class="controller-layout" id="layout-fruit">
+      <div id="swipe-area">
+        <span>SWIPE TO SLICE</span>
+      </div>
+    </div>
+
+    <!-- PLATFORMER -->
+
+    <div class="controller-layout" id="layout-platform">
+      <div class="ctrl-group">
+        <div class="ctrl-label">MOVEMENT</div>
+        <div class="dpad">
+          <span></span>
+          <button class="ctrl-btn" data-control="up">↑</button>
+          <span></span>
+          <button class="ctrl-btn" data-control="left">←</button>
+          <span></span>
+          <button class="ctrl-btn" data-control="right">→</button>
+          <span></span>
+          <button class="ctrl-btn" data-control="down">↓</button>
+          <span></span>
+        </div>
+      </div>
+
+      <div class="ctrl-group">
+        <div class="ctrl-label">ACTIONS</div>
+        <div class="action-grid">
+          <button class="ctrl-btn ctrl-blue" data-control="a">A</button>
+          <button class="ctrl-btn ctrl-red" data-control="b">B</button>
+          <button class="ctrl-btn ctrl-green" data-control="x">X</button>
+          <button class="ctrl-btn ctrl-yellow" data-control="y">Y</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FIGHTING -->
+
+    <div class="controller-layout" id="layout-fight">
+      <div class="ctrl-group">
+        <div class="ctrl-label">MOVEMENT</div>
+        <div class="dpad">
+          <span></span>
+          <button class="ctrl-btn" data-control="up">↑</button>
+          <span></span>
+          <button class="ctrl-btn" data-control="left">←</button>
+          <span></span>
+          <button class="ctrl-btn" data-control="right">→</button>
+          <span></span>
+          <button class="ctrl-btn" data-control="down">↓</button>
+          <span></span>
+        </div>
+      </div>
+
+      <div class="ctrl-group">
+        <div class="ctrl-label">COMBAT</div>
+        <div class="action-grid">
+          <button class="ctrl-btn ctrl-blue" data-control="punch">P</button>
+          <button class="ctrl-btn ctrl-red" data-control="kick">K</button>
+          <button class="ctrl-btn ctrl-green" data-control="block">B</button>
+          <button class="ctrl-btn ctrl-yellow" data-control="special">S</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RACING -->
+
+    <div class="controller-layout" id="layout-race">
+      <div class="ctrl-group" style="width:100%">
+        <div class="trigger-row">
+          <button class="alt" data-control="brake">L2<br><small>Brake</small></button>
+          <button class="alt" data-control="accelerate">R2<br><small>Accelerate</small></button>
+        </div>
+
+        <div class="steer-row">
+          <button class="ctrl-btn" data-control="left">←</button>
+          <button id="p-nitro" data-control="nitro">N₂O</button>
+          <button class="ctrl-btn" data-control="right">→</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GENERIC BUTTON CONTROLLER -->
+
+    <div class="controller-layout" id="layout-buttons">
+      <div class="ctrl-group">
+        <div class="ctrl-label">MOVEMENT</div>
+        <div class="dpad">
+          <span></span>
+          <button class="ctrl-btn" data-control="up">↑</button>
+          <span></span>
+          <button class="ctrl-btn" data-control="left">←</button>
+          <span></span>
+          <button class="ctrl-btn" data-control="right">→</button>
+          <span></span>
+          <button class="ctrl-btn" data-control="down">↓</button>
+          <span></span>
+        </div>
+      </div>
+
+      <div class="ctrl-group">
+        <div class="ctrl-label">ACTIONS</div>
+        <div class="action-grid">
+          <button class="ctrl-btn ctrl-blue" data-control="a">A</button>
+          <button class="ctrl-btn ctrl-red" data-control="b">B</button>
+          <button class="ctrl-btn ctrl-green" data-control="x">X</button>
+          <button class="ctrl-btn ctrl-yellow" data-control="y">Y</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="p-bottom">
+    <div id="p-sens-wrap">
+      Sensitivity
+      <input type="range" id="p-sens" min="50" max="200" value="100">
+    </div>
+
+    <button id="p-ready">Ready</button>
+    <button id="p-recal" class="alt">Calibrate</button>
+  </div>
 </div>
 
 <!-- REQUIRED LOCAL FILES -->
+
 <script src="config.js"></script>
 <script src="audio.js"></script>
 <script src="games.js"></script>
 
-<!-- SUPABASE JAVASCRIPT CLIENT: UPDATED V2 -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script>
 "use strict";
 
-const $=id=>document.getElementById(id);
-const COLORS=["#ff5d5d","#2ec4b6","#ffd23f","#9b7bff","#ff9f43","#ff7eb6","#6bcB77","#4dabf7"];
-const show=id=>{document.querySelectorAll(".scr").forEach(s=>s.classList.toggle("on",s.id===id))};
-const CFG=window.CONFIG||{};
+const $ = id => document.getElementById(id);
 
-if(typeof GAMES==="undefined"||typeof Sfx==="undefined"||!window.CONFIG){
-document.body.insertAdjacentHTML("afterbegin",'<div style="position:fixed;z-index:99;top:0;left:0;right:0;background:#b3261e;color:#fff;padding:10px;text-align:center">Missing files: index.html, config.js, games.js and audio.js must be uploaded together in the same folder.</div>');
-}
+const COLORS = [
+  "#ff5d5d","#2ec4b6","#ffd23f","#9b7bff",
+  "#ff9f43","#ff7eb6","#6bcb77","#4dabf7"
+];
 
-const ok=!!(CFG.SUPABASE_URL&&CFG.SUPABASE_ANON_KEY&&!CFG.SUPABASE_URL.includes("YOUR-"));
-const sb=ok&&window.supabase?window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY,{realtime:{params:{eventsPerSecond:30}}}):null;
+const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
 
-const qs=new URLSearchParams(location.search);
-const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-
-if(ok&&!sb){
-$("cfgwarn").textContent="Supabase library failed to load. Check your internet connection.";
-}
-
-/* MOTION ENGINE */
-class Motion{
-constructor(o={}){
-this.sens=o.sens||1;
-this.dead=o.dead??0.06;
-this.smooth=o.smooth||0.25;
-this.range=o.range||30;
-this.raw=0;this.tiltY=0;this.off=0;this.offY=0;
-this.s=0;this.y=0;this.shake=false;this.last=0;
-this.has=false;this.thr=o.thr||22;
-}
-start(){
-addEventListener("deviceorientation",e=>{
-if(e.gamma==null)return;
-this.has=true;
-const a=(screen.orientation&&screen.orientation.angle)||window.orientation||0;
-let r=e.gamma,p=e.beta;
-if(a===90){r=e.beta;p=-e.gamma}
-else if(a===270||a===-90){r=-e.beta;p=e.gamma}
-else if(a===180){r=-e.gamma;p=-e.beta}
-this.raw=r;this.tiltY=p;
-});
-addEventListener("devicemotion",e=>{
-const g=e.accelerationIncludingGravity;
-if(!g)return;
-const m=Math.hypot(g.x||0,g.y||0,g.z||0)-9.8,n=performance.now();
-if(Math.abs(m)>this.thr&&n-this.last>600){
-this.last=n;this.shake=true;
-}
-});
-}
-calibrate(){this.off=this.raw;this.offY=this.tiltY}
-poll(){
-let v=clamp((this.raw-this.off)/this.range*this.sens,-1,1);
-if(Math.abs(v)<this.dead)v=0;
-this.s+=(v-this.s)*this.smooth;
-let w=clamp((this.tiltY-this.offY)/this.range*this.sens,-1,1);
-if(Math.abs(w)<this.dead)w=0;
-this.y+=(w-this.y)*this.smooth;
-const sh=this.shake;this.shake=false;
-return{s:+this.s.toFixed(2),y:+this.y.toFixed(2),a:sh?1:0};
-}
-}
-
-/* MULTIPLAYER FRAMEWORK */
-function openRoom(pin,onReady){
-const ch=sb.channel("mp:"+pin,{
-config:{
-broadcast:{self:false},
-presence:{key:crypto.randomUUID?crypto.randomUUID():String(Math.random())}
-}
-});
-ch.subscribe(st=>{if(st==="SUBSCRIBED")onReady&&onReady()});
-return ch;
-}
-
-/* HOST */
-if(!qs.get("room")){
-
-let ch,pin,players=new Map(),phase="lobby",mode="multi",game=null,keys={},mouse={x:0,y:0,click:0},G="racer",raf,sendT=0;
-const DUR=45;
-
-const TRACK=(()=>{
-let s=7,r=()=>(s=(s*16807)%2147483647)/2147483647,t=[];
-for(let i=1;i<400;i++){
-t.push({z:i*16,x:r()*1.7-.85,t:"o"});
-if(r()<.7)t.push({z:i*16+8,x:r()*1.7-.85,t:"c"});
-}
-return t;
-})();
-
-show("h-home");
-setTimeout(renderPick);
-
-if(!ok)$("cfgwarn").textContent="Add your Supabase URL and publishable key in config.js to enable phones. Keyboard play still works in Single player.";
-
-addEventListener("keydown",e=>keys[e.key]=1);
-addEventListener("keyup",e=>keys[e.key]=0);
-addEventListener("mousemove",e=>{mouse.x=e.clientX;mouse.y=e.clientY});
-addEventListener("mousedown",e=>{if(e.target.tagName!=="BUTTON")mouse.click=1});
-
-$("mute").onclick=()=>{
-Sfx.muted=!Sfx.muted;
-$("mute").textContent=Sfx.muted?"Sound off":"Sound on";
+const show = id => {
+  document.querySelectorAll(".scr").forEach(s => {
+    s.classList.toggle("on",s.id===id);
+  });
 };
 
-const send=(event,payload)=>ch&&ch.send({type:"broadcast",event,payload});
+const CFG = window.CONFIG || {};
 
-function pick(id){G=id;send("phase",{phase,g:G});renderPick()}
+const ok = !!(
+  CFG.SUPABASE_URL &&
+  CFG.SUPABASE_ANON_KEY &&
+  !CFG.SUPABASE_URL.includes("YOUR-")
+);
 
-function renderPick(){
-["picker","picker2"].forEach(i=>{
-const el=$(i);el.innerHTML="";
-for(const id in GAMES){
-const o=GAMES[id],d=document.createElement("div");
-d.className="gc"+(id===G?" sel":"");
-d.style.setProperty("--c",o.c);
-d.innerHTML=`<div class="ic">${o.icon}</div><b>${o.name}</b><small>${o.desc}</small><small>${o.help}</small>`;
-d.onclick=()=>pick(id);
-el.appendChild(d);
-}
-});
-}
+const sb = ok && window.supabase
+  ? window.supabase.createClient(
+      CFG.SUPABASE_URL,
+      CFG.SUPABASE_ANON_KEY,
+      {realtime:{params:{eventsPerSecond:30}}}
+    )
+  : null;
 
-function confetti(){
-for(let i=0;i<40;i++){
-const c=document.createElement("span");
-c.className="cf";
-c.textContent=["🎉","⭐","✨","🏆"][i%4];
-c.style.left=Math.random()*100+"vw";
-c.style.animationDelay=Math.random()*1.5+"s";
-document.body.appendChild(c);
-setTimeout(()=>c.remove(),5500);
-}
+const qs = new URLSearchParams(location.search);
+
+if (typeof GAMES === "undefined" || typeof Sfx === "undefined") {
+  document.body.insertAdjacentHTML(
+    "afterbegin",
+    '<div style="position:fixed;z-index:99;top:0;left:0;right:0;background:#b3261e;color:#fff;padding:10px;text-align:center">Missing games.js or audio.js. Keep all project files in the same folder.</div>'
+  );
 }
 
-function makeRoom(m){
-if(m==="multi"&&!sb){
-$("cfgwarn").textContent="Supabase is not configured correctly. Check config.js.";
-return;
-}
-mode=m;
-pin=Math.random().toString(36).slice(2,6).toUpperCase().replace(/[01OI]/g,"X");
-$("pin").textContent=pin;
-const u=location.origin+location.pathname+"?room="+pin;
-$("url").textContent=u;
-$("qr").innerHTML="";
-new QRCode($("qr"),{text:u,width:200,height:200});
-show("h-lobby");
-players.clear();
+/* --------------------------------------------------
+   MOTION INPUT
+-------------------------------------------------- */
 
-if(m==="single")addPlayer("kb","Keyboard",true);
+class Motion {
+  constructor(o={}) {
+    this.sens=o.sens||1;
+    this.dead=o.dead??0.06;
+    this.smooth=o.smooth||0.25;
+    this.range=o.range||30;
 
-if(ok){
-ch=openRoom(pin,()=>{ch.track({host:1})});
+    this.raw=0;
+    this.tiltY=0;
+    this.off=0;
+    this.offY=0;
 
-ch.on("broadcast",{event:"hello"},({payload:p})=>{
-addPlayer(p.id,p.name);
-const q=players.get(p.id);
-if(q)send("welcome",{id:p.id,n:q.n,c:q.c,phase,g:G});
-});
+    this.s=0;
+    this.y=0;
+    this.shake=false;
+    this.last=0;
+    this.has=false;
+    this.thr=o.thr||22;
+  }
 
-ch.on("broadcast",{event:"ready"},({payload:p})=>{
-const q=players.get(p.id);
-if(q){q.ready=p.r;lobby()}
-});
+  start() {
+    addEventListener("deviceorientation",e=>{
+      if(e.gamma==null)return;
 
-ch.on("broadcast",{event:"in"},({payload:p})=>{
-const q=players.get(p.id);
-if(q){
-q.in={s:clamp(+p.s||0,-1,1),y:clamp(+p.y||0,-1,1),a:p.a?1:0};
-if(p.a){q.fire=1;q.rep=+p.rt||0}
-q.seen=performance.now();
-}
-});
+      this.has=true;
 
-ch.on("presence",{event:"sync"},()=>{
-const on=new Set();
-Object.values(ch.presenceState()).flat().forEach(x=>x.id&&on.add(x.id));
-players.forEach((q,id)=>{if(id!=="kb")q.online=on.has(id)});
-lobby();
-});
-}
+      const a=(screen.orientation&&screen.orientation.angle)||window.orientation||0;
 
-lobby();
-}
+      let r=e.gamma,p=e.beta;
 
-function addPlayer(id,name,kb){
-let q=players.get(id);
-if(q){q.online=true;q.name=name||q.name;lobby();return}
-if(players.size>=8)return send("full",{id});
-const n=players.size+1;
-players.set(id,{
-id,name:name||"Player "+n,n,c:COLORS[(n-1)%8],
-ready:!!kb,fresh:1,online:true,
-in:{s:0,y:0,a:0},x:0,dist:0,coins:0,
-speed:1,hit:0,idx:0,score:0
-});
-if(!kb)Sfx.play("join");
-lobby();
-}
+      if(a===90){r=e.beta;p=-e.gamma}
+      else if(a===270||a===-90){r=-e.beta;p=e.gamma}
+      else if(a===180){r=-e.gamma;p=-e.beta}
 
-function lobby(){
-$("plist").innerHTML="";
-players.forEach(q=>{
-const d=document.createElement("div");
-d.className="pl"+(q.online?"":" off");
-if(q.fresh){d.style.animation="pop .5s";q.fresh=0}
-d.innerHTML=`<span class="dot" style="background:${q.c}"></span><b>P${q.n} ${q.name.replace(/</g,"&lt;")}</b><span style="color:${q.ready?"var(--ok)":"var(--mute)"}">${q.online?q.ready?"Ready":"Not ready":"Disconnected"}</span>`;
-if(q.id!=="kb"){
-const b=document.createElement("button");
-b.className="alt x";b.textContent="Remove";
-b.onclick=()=>{send("kick",{id:q.id});players.delete(q.id);lobby()};
-d.appendChild(b);
-}
-$("plist").appendChild(d);
-});
-const all=[...players.values()];
-$("b-start").disabled=!(all.length&&all.every(q=>q.ready&&q.online));
-send("phase",{phase,g:G});
-}
+      this.raw=r;
+      this.tiltY=p;
+    });
 
-$("b-single").onclick=()=>makeRoom("single");
-$("b-multi").onclick=()=>makeRoom("multi");
+    addEventListener("devicemotion",e=>{
+      const g=e.accelerationIncludingGravity;
+      if(!g)return;
 
-$("b-close").onclick=()=>{
-send("closed",{});
-ch&&ch.unsubscribe();
-cancelAnimationFrame(raf);
-show("h-home");
-};
+      const m=Math.hypot(g.x||0,g.y||0,g.z||0)-9.8;
+      const n=performance.now();
 
-$("b-start").onclick=()=>{
-players.forEach(q=>Object.assign(q,{x:0,dist:0,coins:0,speed:1,hit:0,idx:0,score:0,fire:0}));
-let c=3;
-phase="count";
-send("phase",{phase,g:G});
-show("h-count");
-$("cnt").style.fontSize="min(10vw,90px)";
-$("cnt").textContent=GAMES[G].icon+" "+GAMES[G].name;
-Sfx.play("start");
-setTimeout(()=>{
-$("cnt").style.fontSize="";
-$("cnt").textContent=c;
-Sfx.play("count");
-const t=setInterval(()=>{
-c--;
-if(c>0){$("cnt").textContent=c;Sfx.play("count")}
-else{clearInterval(t);begin()}
-},1000);
-},1400);
-};
+      if(Math.abs(m)>this.thr&&n-this.last>600){
+        this.last=n;
+        this.shake=true;
+      }
+    });
+  }
 
-$("b-again").onclick=()=>$("b-start").onclick();
+  calibrate() {
+    this.off=this.raw;
+    this.offY=this.tiltY;
+  }
 
-$("b-lobby").onclick=()=>{
-phase="lobby";
-players.forEach(q=>q.id!=="kb"&&(q.ready=false));
-show("h-lobby");
-lobby();
-};
+  poll() {
+    let v=clamp((this.raw-this.off)/this.range*this.sens,-1,1);
 
-function begin(){
-phase="play";
-send("phase",{phase,g:G});
-show("h-game");
-game={t0:performance.now(),last:performance.now()};
-const gm=GAMES[G];
-gm.init&&gm.init([...players.values()],{W:innerWidth,H:innerHeight});
-loop();
+    if(Math.abs(v)<this.dead)v=0;
+
+    this.s+=(v-this.s)*this.smooth;
+
+    let w=clamp((this.tiltY-this.offY)/this.range*this.sens,-1,1);
+
+    if(Math.abs(w)<this.dead)w=0;
+
+    this.y+=(w-this.y)*this.smooth;
+
+    const sh=this.shake;
+    this.shake=false;
+
+    return {
+      s:+this.s.toFixed(2),
+      y:+this.y.toFixed(2),
+      a:sh?1:0
+    };
+  }
 }
 
-function loop(){
-if(G==="racer")return racerLoop();
-const gm=GAMES[G],now=performance.now(),dt=Math.min(.05,(now-game.last)/1000);
-game.last=now;
-const left=gm.dur-(now-game.t0)/1000;
-const P=[...players.values()],cv=$("cv"),W=cv.width=innerWidth,H=cv.height=innerHeight;
-P.forEach(p=>{
-if(p.id==="kb"){
-if(mouse.click||(keys[" "]&&!p.kf))p.fire=1;
-p.kf=keys[" "];
-}
-});
-mouse.click=0;
-gm.update(dt,now,left,P,{W,H,keys,mouse,send});
-gm.draw(cv.getContext("2d"),W,H,P,left);
-$("hud").textContent=gm.hud?gm.hud():Math.max(0,Math.ceil(left))+"s";
-if(now-sendT>200){
-sendT=now;
-const sc={};
-P.forEach(q=>sc[q.id]=q.score);
-send("scores",{sc,left:Math.max(0,Math.ceil(left))});
-}
-if(left<=0||gm.over(P))return finish();
-raf=requestAnimationFrame(loop);
+/* --------------------------------------------------
+   COMMON CONTROLLER STATE
+-------------------------------------------------- */
+
+const CONTROL_NAMES = [
+  "up","down","left","right",
+  "a","b","x","y",
+  "punch","kick","block","special",
+  "accelerate","brake","nitro",
+  "center"
+];
+
+function emptyControls() {
+  const o={};
+  CONTROL_NAMES.forEach(k=>o[k]=false);
+  return o;
 }
 
-function racerLoop(){
-const now=performance.now(),dt=Math.min(.05,(now-game.last)/1000);
-game.last=now;
-const left=DUR-(now-game.t0)/1000;
+function cleanControls(input) {
+  const o=emptyControls();
 
-players.forEach(q=>{
-let s=q.in.s;
-if(q.id==="kb")s=(keys.ArrowRight||keys.d?1:0)-(keys.ArrowLeft||keys.a?1:0);
-if(now-(q.seen||now)>1500&&q.id!=="kb")s=0;
-q.x=clamp(q.x+s*dt*1.6,-1,1);
-q.hit=Math.max(0,q.hit-dt);
-q.speed+=((q.hit>0?.4:1.4)-q.speed)*dt*2;
-q.dist+=q.speed*dt*14;
+  if(!input || typeof input!=="object")return o;
 
-while(q.idx<TRACK.length&&TRACK[q.idx].z<q.dist-2)q.idx++;
+  CONTROL_NAMES.forEach(k=>{
+    o[k]=!!input[k];
+  });
 
-for(let i=q.idx;i<TRACK.length&&TRACK[i].z<q.dist+1.5;i++){
-const o=TRACK[i];
-if(o.gone?.[q.id]||Math.abs(o.z-q.dist)>1.4||Math.abs(o.x-q.x)>.2)continue;
-(o.gone=o.gone||{})[q.id]=1;
-if(o.t==="c"){q.coins++;Sfx.play("point")}
-else if(q.hit<=0){q.hit=1.2;q.dist-=2;Sfx.play("out")}
-}
-q.score=Math.floor(q.dist)+q.coins*50;
-});
-
-draw(left);
-
-if(now-sendT>200){
-sendT=now;
-const sc={};
-players.forEach(q=>sc[q.id]=q.score);
-send("scores",{sc,left:Math.ceil(left)});
+  return o;
 }
 
-if(left<=0)return finish();
-raf=requestAnimationFrame(loop);
+/* --------------------------------------------------
+   ROOM CHANNEL
+-------------------------------------------------- */
+
+function openRoom(pin,onReady) {
+  const ch=sb.channel("mp:"+pin,{
+    config:{
+      broadcast:{self:false},
+      presence:{
+        key:crypto.randomUUID
+          ? crypto.randomUUID()
+          : String(Math.random())
+      }
+    }
+  });
+
+  ch.subscribe(st=>{
+    if(st==="SUBSCRIBED" && onReady)onReady();
+  });
+
+  return ch;
 }
 
-function draw(left){
-const cv=$("cv"),W=cv.width=innerWidth,H=cv.height=innerHeight;
-const g=cv.getContext("2d"),L=[...players.values()],w=W/L.length;
-g.fillStyle="#1b1830";g.fillRect(0,0,W,H);
+/* ==================================================
+   HOST
+================================================== */
 
-L.forEach((q,i)=>{
-const x0=i*w,rw=Math.min(w-16,420),rx=x0+(w-rw)/2;
-g.fillStyle="#3a3566";g.fillRect(rx,0,rw,H);
-g.fillStyle="#f6f1e7";
-for(let y=-(q.dist*40%80);y<H;y+=80)g.fillRect(rx+rw/2-3,y,6,40);
+if(!qs.get("room")) {
 
-const py=H*.78,k=40,X=v=>rx+rw/2+v*rw*.45;
+  let ch;
+  let pin;
+  let players=new Map();
+  let phase="lobby";
+  let mode="multi";
+  let game=null;
+  let keys={};
+  let mouse={x:0,y:0,click:0};
+  let G="racer";
+  let raf;
+  let sendT=0;
+  let countdownTimer;
 
-for(let j=q.idx;j<TRACK.length;j++){
-const o=TRACK[j],y=py-(o.z-q.dist)*k;
-if(y<-30)break;
-if(o.gone?.[q.id]||y>H)continue;
-if(o.t==="c"){
-g.fillStyle="#ffd23f";
-g.beginPath();g.arc(X(o.x),y,12,0,7);g.fill();
-}else{
-g.fillStyle="#ff7a3d";
-g.beginPath();
-g.moveTo(X(o.x),y-22);
-g.lineTo(X(o.x)-16,y+14);
-g.lineTo(X(o.x)+16,y+14);
-g.fill();
+  const DUR=45;
+
+  const TRACK=(()=>{
+    let s=7;
+    const r=()=> (s=(s*16807)%2147483647)/2147483647;
+    const t=[];
+
+    for(let i=1;i<400;i++){
+      t.push({z:i*16,x:r()*1.7-.85,t:"o"});
+      if(r()<.7)t.push({z:i*16+8,x:r()*1.7-.85,t:"c"});
+    }
+
+    return t;
+  })();
+
+  show("h-home");
+
+  addEventListener("keydown",e=>keys[e.key]=1);
+  addEventListener("keyup",e=>keys[e.key]=0);
+
+  addEventListener("mousemove",e=>{
+    mouse.x=e.clientX;
+    mouse.y=e.clientY;
+  });
+
+  addEventListener("mousedown",e=>{
+    if(e.target.tagName!=="BUTTON")mouse.click=1;
+  });
+
+  $("mute").onclick=()=>{
+    if(typeof Sfx!=="undefined") {
+      Sfx.muted=!Sfx.muted;
+      $("mute").textContent=Sfx.muted?"Sound off":"Sound on";
+    }
+  };
+
+  const send=(event,payload)=>{
+    if(ch)ch.send({type:"broadcast",event,payload});
+  };
+
+  function safeSend(event,payload) {
+    send(event,payload);
+  }
+
+  function pick(id) {
+    if(!GAMES[id])return;
+
+    G=id;
+
+    safeSend("phase",{phase,g:G});
+    renderPick();
+  }
+
+  function renderPick() {
+    ["picker","picker2"].forEach(id=>{
+      const el=$(id);
+      el.innerHTML="";
+
+      for(const gameId in GAMES) {
+        const o=GAMES[gameId];
+        const d=document.createElement("div");
+
+        d.className="gc"+(gameId===G?" sel":"");
+        d.style.setProperty("--c",o.c);
+
+        const icon=document.createElement("div");
+        icon.className="ic";
+        icon.textContent=o.icon;
+
+        const title=document.createElement("b");
+        title.textContent=o.name;
+
+        const desc=document.createElement("small");
+        desc.textContent=o.desc;
+
+        const help=document.createElement("small");
+        help.textContent=o.help;
+
+        d.append(icon,title,desc,help);
+        d.onclick=()=>pick(gameId);
+
+        el.appendChild(d);
+      }
+    });
+  }
+
+  function confetti() {
+    for(let i=0;i<40;i++){
+      const c=document.createElement("span");
+      c.className="cf";
+      c.textContent=["🎉","⭐","✨","🏆"][i%4];
+      c.style.left=Math.random()*100+"vw";
+      c.style.animationDelay=Math.random()*1.5+"s";
+
+      document.body.appendChild(c);
+
+      setTimeout(()=>c.remove(),5500);
+    }
+  }
+
+  function makeRoom(m) {
+    if(m==="multi" && !sb) {
+      $("cfgwarn").textContent="Supabase is not configured correctly. Check config.js.";
+      return;
+    }
+
+    if(ch)ch.unsubscribe();
+
+    mode=m;
+
+    pin=Math.random().toString(36).slice(2,6).toUpperCase().replace(/[01OI]/g,"X");
+
+    $("pin").textContent=pin;
+
+    const u=location.origin+location.pathname+"?room="+pin;
+
+    $("url").textContent=u;
+    $("qr").innerHTML="";
+
+    if(typeof QRCode!=="undefined") {
+      new QRCode($("qr"),{text:u,width:200,height:200});
+    }
+
+    show("h-lobby");
+    players.clear();
+
+    if(m==="single")addPlayer("kb","Keyboard",true);
+
+    if(m==="multi" && sb) {
+      ch=openRoom(pin,()=>ch.track({host:1}));
+
+      ch.on("broadcast",{event:"hello"},({payload:p})=>{
+        if(!p || !p.id)return;
+
+        addPlayer(p.id,p.name);
+
+        const q=players.get(p.id);
+
+        if(q)send("welcome",{
+          id:p.id,n:q.n,c:q.c,phase,g:G
+        });
+      });
+
+      ch.on("broadcast",{event:"ready"},({payload:p})=>{
+        const q=players.get(p.id);
+
+        if(q) {
+          q.ready=!!p.r;
+          lobby();
+        }
+      });
+
+      ch.on("broadcast",{event:"in"},({payload:p})=>{
+        const q=players.get(p.id);
+        if(!q)return;
+
+        q.in={
+          s:clamp(+p.s||0,-1,1),
+          y:clamp(+p.y||0,-1,1),
+          a:p.a?1:0
+        };
+
+        q.controls=cleanControls(p.controls);
+        q.swipes=Array.isArray(p.swipes)?p.swipes.slice(0,4):[];
+
+        q.seen=performance.now();
+
+        if(p.a) {
+          q.fire=1;
+          q.rep=+p.rt||0;
+        }
+      });
+
+      ch.on("presence",{event:"sync"},()=>{
+        const on=new Set();
+
+        Object.values(ch.presenceState()).flat().forEach(x=>{
+          if(x.id)on.add(x.id);
+        });
+
+        players.forEach((q,id)=>{
+          if(id!=="kb")q.online=on.has(id);
+        });
+
+        lobby();
+      });
+
+      ch.on("broadcast",{event:"full"},({payload:p})=>{
+        if(p && p.id)send("kick",{id:p.id});
+      });
+
+      ch.on("broadcast",{event:"disconnect"},({payload:p})=>{
+        const q=players.get(p.id);
+        if(q) {
+          q.online=false;
+          q.ready=false;
+          lobby();
+        }
+      });
+    }
+
+    lobby();
+  }
+
+  function addPlayer(id,name,kb) {
+    let q=players.get(id);
+
+    if(q) {
+      q.online=true;
+      q.name=name||q.name;
+      lobby();
+      return;
+    }
+
+    if(players.size>=8) {
+      send("full",{id});
+      return;
+    }
+
+    const n=players.size+1;
+
+    players.set(id,{
+      id,
+      name:name||"Player "+n,
+      n,
+      c:COLORS[(n-1)%8],
+      ready:!!kb,
+      fresh:1,
+      online:true,
+
+      in:{s:0,y:0,a:0},
+      controls:emptyControls(),
+      swipes:[],
+
+      x:0,
+      dist:0,
+      coins:0,
+      speed:1,
+      hit:0,
+      idx:0,
+      score:0,
+      fire:0,
+      seen:performance.now()
+    });
+
+    if(!kb && typeof Sfx!=="undefined")Sfx.play("join");
+
+    lobby();
+  }
+
+  function lobby() {
+    $("plist").innerHTML="";
+
+    players.forEach(q=>{
+      const d=document.createElement("div");
+
+      d.className="pl"+(q.online?"":" off");
+
+      if(q.fresh) {
+        d.style.animation="pop .5s";
+        q.fresh=0;
+      }
+
+      const dot=document.createElement("span");
+      dot.className="dot";
+      dot.style.background=q.c;
+
+      const name=document.createElement("b");
+      name.textContent=`P${q.n} ${q.name}`;
+
+      const status=document.createElement("span");
+
+      status.style.color=q.ready?"var(--ok)":"var(--mute)";
+      status.textContent=q.online
+        ?q.ready?"Ready":"Not ready"
+        :"Disconnected";
+
+      d.append(dot,name,status);
+
+      if(q.id!=="kb") {
+        const b=document.createElement("button");
+        b.className="alt x";
+        b.textContent="Remove";
+
+        b.onclick=()=>{
+          send("kick",{id:q.id});
+          players.delete(q.id);
+          lobby();
+        };
+
+        d.appendChild(b);
+      }
+
+      $("plist").appendChild(d);
+    });
+
+    const all=[...players.values()];
+
+    $("b-start").disabled=!(
+      all.length &&
+      all.every(q=>q.ready&&q.online)
+    );
+
+    $("lmsg").textContent=
+      all.length
+        ?`${all.length} player(s) connected. Everyone must be ready.`
+        :"Waiting for players.";
+
+    send("phase",{phase,g:G});
+  }
+
+  $("b-single").onclick=()=>makeRoom("single");
+  $("b-multi").onclick=()=>makeRoom("multi");
+
+  $("b-close").onclick=()=>{
+    send("closed",{});
+
+    if(ch)ch.unsubscribe();
+
+    cancelAnimationFrame(raf);
+    clearInterval(countdownTimer);
+
+    ch=null;
+    show("h-home");
+  };
+
+  $("b-start").onclick=()=>{
+    players.forEach(q=>{
+      Object.assign(q,{
+        x:0,dist:0,coins:0,speed:1,
+        hit:0,idx:0,score:0,fire:0,
+        controls:emptyControls(),
+        swipes:[]
+      });
+    });
+
+    let c=3;
+
+    phase="count";
+    send("phase",{phase,g:G});
+
+    show("h-count");
+
+    $("cnt").style.fontSize="min(10vw,90px)";
+    $("cnt").textContent=GAMES[G].icon+" "+GAMES[G].name;
+
+    if(typeof Sfx!=="undefined")Sfx.play("start");
+
+    setTimeout(()=>{
+      $("cnt").style.fontSize="";
+      $("cnt").textContent=c;
+
+      if(typeof Sfx!=="undefined")Sfx.play("count");
+
+      countdownTimer=setInterval(()=>{
+        c--;
+
+        if(c>0) {
+          $("cnt").textContent=c;
+          if(typeof Sfx!=="undefined")Sfx.play("count");
+        } else {
+          clearInterval(countdownTimer);
+          begin();
+        }
+      },1000);
+    },1400);
+  };
+
+  $("b-again").onclick=()=>$("b-start").onclick();
+
+  $("b-lobby").onclick=()=>{
+    phase="lobby";
+
+    players.forEach(q=>{
+      if(q.id!=="kb")q.ready=false;
+    });
+
+    show("h-lobby");
+    lobby();
+  };
+
+  function begin() {
+    phase="play";
+
+    send("phase",{phase,g:G});
+
+    show("h-game");
+
+    game={
+      t0:performance.now(),
+      last:performance.now()
+    };
+
+    const gm=GAMES[G];
+
+    gm.init&&gm.init([...players.values()],{
+      W:innerWidth,
+      H:innerHeight
+    });
+
+    loop();
+  }
+
+  function loop() {
+    if(G==="racer")return racerLoop();
+
+    const gm=GAMES[G];
+
+    const now=performance.now();
+    const dt=Math.min(.05,(now-game.last)/1000);
+
+    game.last=now;
+
+    const left=gm.dur-(now-game.t0)/1000;
+
+    const P=[...players.values()];
+
+    const cv=$("cv");
+    const W=cv.width=innerWidth;
+    const H=cv.height=innerHeight;
+
+    P.forEach(p=>{
+      if(p.id==="kb") {
+        if(mouse.click||(keys[" "]&&!p.kf))p.fire=1;
+        p.kf=keys[" "];
+
+        p.controls=emptyControls();
+
+        p.controls.left=!!(keys.ArrowLeft||keys.a);
+        p.controls.right=!!(keys.ArrowRight||keys.d);
+        p.controls.up=!!keys.ArrowUp;
+        p.controls.down=!!keys.ArrowDown;
+
+        p.controls.a=!!keys[" "];
+        p.controls.b=!!keys.Shift;
+      }
+    });
+
+    mouse.click=0;
+
+    gm.update(dt,now,left,P,{
+      W,H,keys,mouse,send,
+      mode,
+      controls:P.map(p=>p.controls)
+    });
+
+    gm.draw(
+      cv.getContext("2d"),
+      W,H,P,left,
+      {mode}
+    );
+
+    $("hud").textContent=
+      gm.hud?gm.hud():Math.max(0,Math.ceil(left))+"s";
+
+    if(now-sendT>200) {
+      sendT=now;
+
+      const sc={};
+
+      P.forEach(q=>sc[q.id]=q.score);
+
+      send("scores",{
+        sc,
+        left:Math.max(0,Math.ceil(left))
+      });
+    }
+
+    if(left<=0 || gm.over(P))return finish();
+
+    raf=requestAnimationFrame(loop);
+  }
+
+  /* ORIGINAL MOTION RACER */
+
+  function racerLoop() {
+    const now=performance.now();
+    const dt=Math.min(.05,(now-game.last)/1000);
+
+    game.last=now;
+
+    const left=DUR-(now-game.t0)/1000;
+
+    players.forEach(q=>{
+      let s=q.in.s;
+
+      if(q.id==="kb") {
+        s=(keys.ArrowRight||keys.d?1:0)-
+          (keys.ArrowLeft||keys.a?1:0);
+      }
+
+      if(now-(q.seen||now)>1500&&q.id!=="kb")s=0;
+
+      q.x=clamp(q.x+s*dt*1.6,-1,1);
+
+      q.hit=Math.max(0,q.hit-dt);
+
+      q.speed+=((q.hit>0?.4:1.4)-q.speed)*dt*2;
+
+      q.dist+=q.speed*dt*14;
+
+      while(q.idx<TRACK.length&&TRACK[q.idx].z<q.dist-2)q.idx++;
+
+      for(let i=q.idx;i<TRACK.length&&TRACK[i].z<q.dist+1.5;i++) {
+        const o=TRACK[i];
+
+        if(o.gone?.[q.id]||
+          Math.abs(o.z-q.dist)>1.4||
+          Math.abs(o.x-q.x)>.2)continue;
+
+        (o.gone=o.gone||{})[q.id]=1;
+
+        if(o.t==="c") {
+          q.coins++;
+          if(typeof Sfx!=="undefined")Sfx.play("point");
+        } else if(q.hit<=0) {
+          q.hit=1.2;
+          q.dist-=2;
+          if(typeof Sfx!=="undefined")Sfx.play("out");
+        }
+      }
+
+      q.score=Math.floor(q.dist)+q.coins*50;
+    });
+
+    drawRacer(left);
+
+    if(now-sendT>200) {
+      sendT=now;
+
+      const sc={};
+
+      players.forEach(q=>sc[q.id]=q.score);
+
+      send("scores",{sc,left:Math.ceil(left)});
+    }
+
+    if(left<=0)return finish();
+
+    raf=requestAnimationFrame(loop);
+  }
+
+  function drawRacer(left) {
+    const cv=$("cv");
+    const W=cv.width=innerWidth;
+    const H=cv.height=innerHeight;
+
+    const g=cv.getContext("2d");
+    const L=[...players.values()];
+    const w=W/L.length;
+
+    g.fillStyle="#1b1830";
+    g.fillRect(0,0,W,H);
+
+    L.forEach((q,i)=>{
+      const x0=i*w;
+      const rw=Math.min(w-16,420);
+      const rx=x0+(w-rw)/2;
+
+      g.fillStyle="#3a3566";
+      g.fillRect(rx,0,rw,H);
+
+      g.fillStyle="#f6f1e7";
+
+      for(let y=-(q.dist*40%80);y<H;y+=80) {
+        g.fillRect(rx+rw/2-3,y,6,40);
+      }
+
+      const py=H*.78;
+      const X=v=>rx+rw/2+v*rw*.45;
+
+      for(let j=q.idx;j<TRACK.length;j++) {
+        const o=TRACK[j];
+        const y=py-(o.z-q.dist)*40;
+
+        if(y<-30)break;
+        if(o.gone?.[q.id]||y>H)continue;
+
+        if(o.t==="c") {
+          g.fillStyle="#ffd23f";
+          g.beginPath();
+          g.arc(X(o.x),y,12,0,7);
+          g.fill();
+        } else {
+          g.fillStyle="#ff7a3d";
+          g.beginPath();
+          g.moveTo(X(o.x),y-22);
+          g.lineTo(X(o.x)-16,y+14);
+          g.lineTo(X(o.x)+16,y+14);
+          g.fill();
+        }
+      }
+
+      g.save();
+      g.translate(X(q.x),py);
+
+      g.globalAlpha=q.hit>0&&(q.hit*10|0)%2?.3:1;
+      g.fillStyle=q.c;
+      g.fillRect(-16,-28,32,56);
+
+      g.fillStyle="#fff8";
+      g.fillRect(-11,-18,22,14);
+
+      g.restore();
+
+      g.fillStyle=q.c;
+      g.font="700 24px Fredoka,sans-serif";
+      g.textAlign="center";
+      g.fillText(`P${q.n} ${q.name} ${q.score}`,x0+w/2,80);
+    });
+
+    $("hud").textContent=Math.max(0,Math.ceil(left))+"s";
+  }
+
+  function finish() {
+    phase="results";
+
+    const r=[...players.values()].sort((a,b)=>b.score-a.score);
+
+    $("win").textContent=
+      r.length>1
+        ?`${r[0].name} wins!`
+        :`Score: ${r[0]?.score||0}`;
+
+    $("rank").innerHTML=r.map((q,i)=>`
+      <div class="card" style="border-top:8px solid ${q.c}">
+        <div style="font-size:30px">${i+1}. ${q.name}</div>
+        ${q.score} pts
+      </div>
+    `).join("");
+
+    show("h-res");
+
+    if(typeof Sfx!=="undefined")Sfx.play("win");
+
+    confetti();
+
+    send("results",{
+      r:r.map(q=>({id:q.id,s:q.score}))
+    });
+
+    send("phase",{phase,g:G});
+  }
+
+  renderPick();
+
+  if(!ok) {
+    $("cfgwarn").textContent=
+      "Add your Supabase URL and publishable key in config.js to enable phones. Keyboard play still works in Single player.";
+  }
 }
-}
 
-g.save();
-g.translate(X(q.x),py);
-g.globalAlpha=q.hit>0&&(q.hit*10|0)%2?.3:1;
-g.fillStyle=q.c;
-g.fillRect(-16,-28,32,56);
-g.fillStyle="#fff8";
-g.fillRect(-11,-18,22,14);
-g.restore();
+/* ==================================================
+   PHONE
+================================================== */
 
-g.fillStyle=q.c;
-g.font="700 28px Fredoka,sans-serif";
-g.textAlign="center";
-g.fillText(`P${q.n} ${q.name}  ${q.score}`,x0+w/2,80);
-});
+else {
 
-$("hud").textContent=Math.max(0,Math.ceil(left))+"s";
-}
+  const pin=qs.get("room").toUpperCase();
 
-function finish(){
-phase="results";
-const r=[...players.values()].sort((a,b)=>b.score-a.score);
-$("win").textContent=r.length>1?`${r[0].name} wins!`:`Score: ${r[0].score}`;
-$("rank").innerHTML=r.map((q,i)=>`<div class="card" style="border-top:8px solid ${q.c}"><div style="font-size:30px">${i+1}. ${q.name.replace(/</g,"&lt;")}</div>${q.score} pts</div>`).join("");
-show("h-res");
-Sfx.play("win");
-confetti();
-send("results",{r:r.map(q=>({id:q.id,s:q.score}))});
-send("phase",{phase,g:G});
-}
+  const M=new Motion();
 
-}
+  const me={
+    id:localStorage.mp_id||
+      (localStorage.mp_id=Math.random().toString(36).slice(2)),
+    name:localStorage.mp_name||""
+  };
 
-/* PHONE */
-else{
+  let ch;
+  let ready=false;
+  let touchX=0;
+  let fireTap=0;
+  let goT=0;
+  let useTouch=false;
+  let loopT=null;
+  let activeGame="racer";
+  let controls=emptyControls();
+  let swipeQueue=[];
+  let pointerActive=false;
+  let pointerLast=null;
 
-const pin=qs.get("room").toUpperCase();
-const M=new Motion();
-const me={
-id:localStorage.mp_id||(localStorage.mp_id=Math.random().toString(36).slice(2)),
-name:localStorage.mp_name||""
-};
+  $("mute").style.display="none";
 
-let ch,ready=false,touch=0,fireTap=0,goT=0,useTouch=false,loopT;
+  const HELP={
+    racer:"Tilt left and right to steer.",
+    target:"Tilt to aim. Shake or press FIRE.",
+    balance:"Tilt to keep your balance.",
+    reaction:"Wait for green, then shake or press FIRE.",
+    fruit:"Swipe across the screen to slice fruit.",
+    fruitninja:"Swipe across the screen to slice fruit.",
+    platform:"Move with the D-pad. Jump with A.",
+    platformer:"Move with the D-pad. Jump with A.",
+    battle:"Move, punch, kick, block and use special attacks.",
+    fighting:"Move, punch, kick, block and use special attacks.",
+    racing:"Steer, accelerate, brake and use nitro."
+  };
 
-$("mute").style.display="none";
+  const GAME_LAYOUT={
+    racer:"tilt",
+    target:"tilt",
+    balance:"tilt",
+    reaction:"tilt",
+    fruit:"fruit",
+    fruitninja:"fruit",
+    platform:"platform",
+    platformer:"platform",
+    battle:"fight",
+    fighting:"fight",
+    racing:"race"
+  };
 
-const HELP={
-racer:"Tilt left and right to steer.",
-target:"Tilt to aim. Shake or tap FIRE to shoot.",
-balance:"Tilt to keep the ball centred.",
-reaction:"Wait for green, then shake or tap FIRE."
-};
+  function setGame(g) {
+    if(!g)return;
 
-const setGame=g=>{
-if(!g)return;
-$("p-help").textContent=HELP[g]||"Tilt your phone to play.";
-$("p-fire").style.display=g==="target"||g==="reaction"?"block":"none";
-};
+    activeGame=g.toLowerCase();
 
-$("p-fire").addEventListener("pointerdown",()=>fireTap=1);
-$("p-sens").oninput=e=>M.sens=e.target.value/100;
-$("p-pin").value=pin;
-$("p-name").value=me.name;
-show("p-join");
+    $("p-help").textContent=HELP[activeGame]||"Use the controller to play.";
 
-if(!ok)$("p-err").textContent="Backend not configured (config.js).";
+    const layout=GAME_LAYOUT[activeGame]||"buttons";
 
-$("p-go").onclick=async()=>{
-if(!ok||!sb)return;
-const n=$("p-name").value.trim();
-if(!n)return $("p-err").textContent="Enter a name.";
-me.name=n;
-localStorage.mp_name=n;
+    document.querySelectorAll(".controller-layout").forEach(el=>{
+      el.classList.remove("active");
+    });
 
-try{
-if(typeof DeviceMotionEvent!=="undefined"&&DeviceMotionEvent.requestPermission){
-const a=await DeviceOrientationEvent.requestPermission();
-const b=await DeviceMotionEvent.requestPermission();
-if(a!=="granted"||b!=="granted")throw 0;
-}
-}catch(e){useTouch=true}
+    const selected=$("layout-"+layout);
 
-M.start();
-connect();
-show("p-cal");
+    if(selected)selected.classList.add("active");
 
-setTimeout(()=>{
-if(!M.has){
-useTouch=true;
-$("pad").style.display="flex";
-}
-},1500);
+    if(layout==="tilt" && !M.has) {
+      $("p-help").textContent+=" Use the buttons if motion sensing is unavailable.";
+    }
+  }
 
-if(useTouch)$("pad").style.display="flex";
-};
+  function pressControl(name,value) {
+    if(!(name in controls))return;
 
-function connect(){
-ch=sb.channel("mp:"+pin,{
-config:{broadcast:{self:false},presence:{key:me.id}}
-});
+    controls[name]=value;
+  }
 
-const hi=()=>ch.send({type:"broadcast",event:"hello",payload:me});
+  document.querySelectorAll("[data-control]").forEach(button=>{
+    const name=button.dataset.control;
 
-ch.on("broadcast",{event:"welcome"},({payload:p})=>{
-if(p.id!==me.id)return;
-$("p-who").textContent=`P${p.n} · ${me.name}`;
-$("p-dot").style.background=p.c;
-setGame(p.g);
-});
+    button.addEventListener("pointerdown",e=>{
+      e.preventDefault();
 
-ch.on("broadcast",{event:"kick"},({payload:p})=>{
-if(p.id===me.id){
-ch.unsubscribe();
-clearInterval(loopT);
-$("p-err").textContent="You were removed by the host.";
-show("p-join");
-}
-});
+      button.setPointerCapture?.(e.pointerId);
 
-ch.on("broadcast",{event:"closed"},()=>{
-clearInterval(loopT);
-$("p-err").textContent="Room closed.";
-show("p-join");
-});
+      pressControl(name,true);
+      button.classList.add("pressed");
+    });
 
-ch.on("broadcast",{event:"scores"},({payload:p})=>{
-$("p-stat").textContent=`Score ${p.sc[me.id]??0} · ${p.left}s`;
-});
+    const release=()=>{
+      pressControl(name,false);
+      button.classList.remove("pressed");
+    };
 
-ch.on("broadcast",{event:"go"},()=>{
-goT=performance.now();
-document.body.style.background="#1fa855";
-setTimeout(()=>document.body.style.background="",700);
-});
+    button.addEventListener("pointerup",release);
+    button.addEventListener("pointercancel",release);
+    button.addEventListener("lostpointercapture",release);
+    button.addEventListener("contextmenu",e=>e.preventDefault());
+  });
 
-ch.on("broadcast",{event:"phase"},({payload:p})=>{
-setGame(p.g);
-if(p.phase==="lobby"){
-ready=false;
-$("p-ready").textContent="Ready";
-$("p-stat").textContent="In lobby";
-}
-if(p.phase==="count")$("p-stat").textContent="Get ready…";
-if(p.phase==="play")$("p-stat").textContent="Go!";
-});
+  $("p-fire").addEventListener("pointerdown",e=>{
+    e.preventDefault();
+    fireTap=1;
+  });
 
-ch.on("broadcast",{event:"results"},({payload:p})=>{
-const i=p.r.findIndex(x=>x.id===me.id);
-$("p-stat").textContent=`Finished #${i+1} · ${p.r[i]?.s??0} pts`;
-});
+  $("p-sens").oninput=e=>{
+    M.sens=Number(e.target.value)/100;
+  };
 
-ch.subscribe(s=>{
-if(s==="SUBSCRIBED"){
-ch.track({id:me.id});
-hi();
-}
-if(s==="CHANNEL_ERROR"||s==="TIMED_OUT"){
-$("p-stat").textContent="Reconnecting…";
-}
-});
+  $("p-pin").value=pin;
+  $("p-name").value=me.name;
 
-clearInterval(loopT);
-loopT=setInterval(()=>{
-let m=M.poll(),s=m.s;
-if(useTouch||!M.has)s=touch;
-const a=m.a||fireTap?1:0;
-fireTap=0;
-if(a&&navigator.vibrate)navigator.vibrate(30);
-ch.send({
-type:"broadcast",
-event:"in",
-payload:{
-id:me.id,
-s,
-y:m.y,
-a,
-rt:a&&goT?Math.round(performance.now()-goT):0
-}
-});
-if(a)goT=0;
-},50);
-}
+  show("p-join");
 
-$("p-calbtn").onclick=()=>{
-M.calibrate();
-show("p-main");
-};
+  if(!ok) {
+    $("p-err").textContent="Backend not configured. Check config.js.";
+  }
 
-$("p-recal").onclick=()=>M.calibrate();
+  /* SWIPE INPUT */
 
-$("p-ready").onclick=()=>{
-ready=!ready;
-$("p-ready").textContent=ready?"Not ready":"Ready";
-ch.send({
-type:"broadcast",
-event:"ready",
-payload:{id:me.id,r:ready}
-});
-};
+  const swipeArea=$("swipe-area");
 
-document.querySelectorAll("#pad button").forEach(b=>{
-const d=+b.dataset.d;
-b.addEventListener("pointerdown",()=>touch=d);
-b.addEventListener("pointerup",()=>touch=0);
-b.addEventListener("pointerleave",()=>touch=0);
-});
+  swipeArea.addEventListener("pointerdown",e=>{
+    e.preventDefault();
+
+    pointerActive=true;
+    pointerLast={
+      x:e.clientX,
+      y:e.clientY,
+      t:performance.now()
+    };
+
+    swipeArea.setPointerCapture?.(e.pointerId);
+  });
+
+  swipeArea.addEventListener("pointermove",e=>{
+    if(!pointerActive||!pointerLast)return;
+
+    const rect=swipeArea.getBoundingClientRect();
+
+    const point={
+      x:clamp((e.clientX-rect.left)/rect.width,0,1),
+      y:clamp((e.clientY-rect.top)/rect.height,0,1)
+    };
+
+    const last={
+      x:clamp((pointerLast.x-rect.left)/rect.width,0,1),
+      y:clamp((pointerLast.y-rect.top)/rect.height,0,1)
+    };
+
+    swipeQueue.push({
+      x1:last.x,
+      y1:last.y,
+      x2:point.x,
+      y2:point.y
+    });
+
+    if(swipeQueue.length>30)swipeQueue.shift();
+
+    pointerLast={
+      x:e.clientX,
+      y:e.clientY,
+      t:performance.now()
+    };
+  });
+
+  const endSwipe=()=>{
+    pointerActive=false;
+    pointerLast=null;
+  };
+
+  swipeArea.addEventListener("pointerup",endSwipe);
+  swipeArea.addEventListener("pointercancel",endSwipe);
+  swipeArea.addEventListener("lostpointercapture",endSwipe);
+
+  /* JOIN */
+
+  $("p-go").onclick=async()=>{
+    if(!ok||!sb) {
+      $("p-err").textContent="Supabase is not configured.";
+      return;
+    }
+
+    const n=$("p-name").value.trim();
+
+    if(!n) {
+      $("p-err").textContent="Enter your name.";
+      return;
+    }
+
+    me.name=n;
+    localStorage.mp_name=n;
+
+    $("p-go").disabled=true;
+    $("p-err").textContent="Connecting...";
+
+    try {
+      if(typeof DeviceOrientationEvent!=="undefined" &&
+        typeof DeviceOrientationEvent.requestPermission==="function") {
+
+        const a=await DeviceOrientationEvent.requestPermission();
+
+        let b="granted";
+
+        if(typeof DeviceMotionEvent!=="undefined" &&
+          typeof DeviceMotionEvent.requestPermission==="function") {
+          b=await DeviceMotionEvent.requestPermission();
+        }
+
+        if(a!=="granted"||b!=="granted")useTouch=true;
+      }
+    } catch(e) {
+      useTouch=true;
+    }
+
+    M.start();
+    connect();
+
+    show("p-cal");
+
+    setTimeout(()=>{
+      if(!M.has) {
+        useTouch=true;
+        $("p-touch-hint").textContent="TOUCH CONTROLS";
+      }
+    },1500);
+  };
+
+  function connect() {
+    ch=sb.channel("mp:"+pin,{
+      config:{
+        broadcast:{self:false},
+        presence:{key:me.id}
+      }
+    });
+
+    const hi=()=>ch.send({
+      type:"broadcast",
+      event:"hello",
+      payload:me
+    });
+
+    ch.on("broadcast",{event:"welcome"},({payload:p})=>{
+      if(p.id!==me.id)return;
+
+      $("p-who").textContent=`P${p.n} · ${me.name}`;
+      $("p-dot").style.background=p.c;
+
+      setGame(p.g);
+
+      if(p.phase==="play")show("p-main");
+    });
+
+    ch.on("broadcast",{event:"kick"},({payload:p})=>{
+      if(p.id!==me.id)return;
+
+      clearInterval(loopT);
+      ch.unsubscribe();
+
+      $("p-err").textContent="You were removed by the host.";
+
+      show("p-join");
+    });
+
+    ch.on("broadcast",{event:"full"},()=>{
+      $("p-err").textContent="This room is full.";
+    });
+
+    ch.on("broadcast",{event:"closed"},()=>{
+      clearInterval(loopT);
+
+      $("p-err").textContent="Room closed.";
+
+      show("p-join");
+    });
+
+    ch.on("broadcast",{event:"scores"},({payload:p})=>{
+      $("p-stat").textContent=
+        `Score ${p.sc?.[me.id]??0} · ${p.left}s`;
+    });
+
+    ch.on("broadcast",{event:"go"},()=>{
+      goT=performance.now();
+
+      document.body.style.background="#1fa855";
+
+      setTimeout(()=>document.body.style.background="",700);
+    });
+
+    ch.on("broadcast",{event:"phase"},({payload:p})=>{
+      setGame(p.g);
+
+      if(p.phase==="lobby") {
+        ready=false;
+        $("p-ready").textContent="Ready";
+        $("p-stat").textContent="In lobby";
+        show("p-main");
+      }
+
+      if(p.phase==="count") {
+        $("p-stat").textContent="Get ready...";
+        show("p-main");
+      }
+
+      if(p.phase==="play") {
+        $("p-stat").textContent="Go!";
+        show("p-main");
+      }
+
+      if(p.phase==="results") {
+        $("p-stat").textContent="Round finished";
+      }
+    });
+
+    ch.on("broadcast",{event:"results"},({payload:p})=>{
+      const i=p.r.findIndex(x=>x.id===me.id);
+
+      $("p-stat").textContent=
+        `Finished #${i+1} · ${p.r[i]?.s??0} pts`;
+    });
+
+    ch.subscribe(s=>{
+      if(s==="SUBSCRIBED") {
+        ch.track({id:me.id});
+        hi();
+        $("p-err").textContent="";
+        $("p-go").disabled=false;
+      }
+
+      if(s==="CHANNEL_ERROR"||s==="TIMED_OUT") {
+        $("p-stat").textContent="Connection error. Try joining again.";
+        $("p-go").disabled=false;
+      }
+    });
+
+    clearInterval(loopT);
+
+    loopT=setInterval(()=>{
+      if(!ch)return;
+
+      const m=M.poll();
+
+      let s=m.s;
+
+      if(useTouch||!M.has) {
+        s=Number(controls.right)-Number(controls.left);
+      }
+
+      const a=m.a||fireTap?1:0;
+
+      fireTap=0;
+
+      if(a&&navigator.vibrate)navigator.vibrate(25);
+
+      const swipes=swipeQueue.splice(0,4);
+
+      ch.send({
+        type:"broadcast",
+        event:"in",
+        payload:{
+          id:me.id,
+          s,
+          y:m.y,
+          a,
+          rt:a&&goT?Math.round(performance.now()-goT):0,
+          controls:{...controls},
+          swipes
+        }
+      });
+
+      if(a)goT=0;
+    },50);
+  }
+
+  $("p-calbtn").onclick=()=>{
+    M.calibrate();
+    show("p-main");
+  };
+
+  $("p-skipcal").onclick=()=>{
+    useTouch=true;
+    show("p-main");
+  };
+
+  $("p-recal").onclick=()=>{
+    M.calibrate();
+  };
+
+  $("p-ready").onclick=()=>{
+    ready=!ready;
+
+    $("p-ready").textContent=ready?"Not ready":"Ready";
+
+    if(ch)ch.send({
+      type:"broadcast",
+      event:"ready",
+      payload:{id:me.id,r:ready}
+    });
+  };
+
+  addEventListener("pagehide",()=>{
+    clearInterval(loopT);
+
+    if(ch) {
+      ch.send({
+        type:"broadcast",
+        event:"disconnect",
+        payload:{id:me.id}
+      });
+
+      ch.unsubscribe();
+    }
+  });
 
 }
 </script>
+
 </body>
 </html>
