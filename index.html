@@ -3,42 +3,29 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>MotionPlay</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
-:root {
+:root{
   --bg:#1b1830;
   --panel:#2a2650;
   --ink:#f6f1e7;
   --mute:#aaa6c9;
   --ok:#2ec4b6;
 }
-
-* {
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
-
-html,body {
-  width:100%;
-  height:100%;
-  margin:0;
-  overflow:hidden;
-}
-
-body {
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
   background:var(--bg);
   color:var(--ink);
   font-family:Fredoka,"Trebuchet MS",sans-serif;
-  user-select:none;
+  overflow:hidden;
   -webkit-user-select:none;
-  touch-action:manipulation;
+  user-select:none;
 }
-
-.scr {
+.scr{
   position:fixed;
   inset:0;
   display:none;
@@ -48,42 +35,28 @@ body {
   gap:18px;
   padding:24px;
   text-align:center;
-  overflow:auto;
 }
-
-.scr.on {
-  display:flex;
-}
-
-h1 {
+.scr.on{display:flex}
+h1{
   font-size:clamp(40px,8vw,96px);
   margin:0;
   letter-spacing:-2px;
 }
-
-button {
+button{
   font:inherit;
   font-weight:600;
   font-size:20px;
   border:0;
   border-radius:18px;
-  padding:14px 24px;
+  padding:14px 28px;
   background:var(--ink);
   color:var(--bg);
   cursor:pointer;
-  touch-action:none;
+  touch-action:manipulation;
 }
-
-button.alt {
-  background:var(--panel);
-  color:var(--ink);
-}
-
-button:disabled {
-  opacity:.35;
-}
-
-input {
+button.alt{background:var(--panel);color:var(--ink)}
+button:disabled{opacity:.35}
+input{
   font:inherit;
   font-size:22px;
   padding:14px;
@@ -94,33 +67,20 @@ input {
   width:min(320px,90vw);
   text-align:center;
 }
-
-.row {
+.row{
   display:flex;
   gap:14px;
   flex-wrap:wrap;
   justify-content:center;
 }
-
-.card {
+.card{
   background:var(--panel);
   border-radius:22px;
   padding:20px 26px;
 }
-
-#qr {
-  background:white;
-  padding:12px;
-  border-radius:16px;
-}
-
-.pin {
-  font-size:64px;
-  font-weight:700;
-  letter-spacing:10px;
-}
-
-.pl {
+#qr{background:#fff;padding:12px;border-radius:16px}
+.pin{font-size:64px;font-weight:700;letter-spacing:10px}
+.pl{
   display:flex;
   gap:12px;
   align-items:center;
@@ -129,49 +89,28 @@ input {
   padding:10px 16px;
   min-width:260px;
 }
-
-.dot {
-  width:26px;
-  height:26px;
-  border-radius:50%;
-  flex-shrink:0;
-}
-
-.off {
-  opacity:.4;
-}
-
-.x {
-  margin-left:auto;
-  padding:4px 12px;
-  font-size:16px;
-}
-
-canvas {
+.dot{width:26px;height:26px;border-radius:50%}
+.off{opacity:.4}
+.x{margin-left:auto;padding:4px 12px;font-size:16px}
+canvas{
   width:100vw;
   height:100vh;
   position:fixed;
   inset:0;
   display:block;
 }
-
-#hud {
+#hud{
   position:fixed;
   top:12px;
   left:0;
   right:0;
-  font-size:32px;
+  font-size:36px;
   font-weight:700;
   pointer-events:none;
-  z-index:3;
 }
+.big{font-size:min(30vw,260px);font-weight:700}
 
-.big {
-  font-size:min(30vw,260px);
-  font-weight:700;
-}
-
-.gc {
+.gc{
   background:var(--panel);
   border-radius:22px;
   padding:16px;
@@ -182,20 +121,21 @@ canvas {
   flex-direction:column;
   gap:6px;
 }
+.gc.sel{border-color:var(--c)}
+.gc .ic{font-size:56px;animation:bob 2s infinite}
+.gc small{color:var(--mute)}
 
-.gc.sel {
-  border-color:var(--c);
+@keyframes pop{
+  from{transform:scale(.3);opacity:0}
+  to{transform:none;opacity:1}
 }
-
-.gc .ic {
-  font-size:56px;
+@keyframes bob{
+  50%{transform:translateY(-8px) rotate(6deg)}
 }
-
-.gc small {
-  color:var(--mute);
+@keyframes fall{
+  to{transform:translateY(110vh) rotate(720deg)}
 }
-
-.cf {
+.cf{
   position:fixed;
   top:-30px;
   font-size:28px;
@@ -204,295 +144,202 @@ canvas {
   z-index:20;
 }
 
-@keyframes pop {
-  from {transform:scale(.3);opacity:0}
-  to {transform:none;opacity:1}
-}
-
-@keyframes fall {
-  to {transform:translateY(110vh) rotate(720deg)}
-}
-
 /* PHONE CONTROLLER */
 
-#p-main {
+#p-main{
   justify-content:flex-start;
-  gap:12px;
-  padding:
-    max(14px,env(safe-area-inset-top))
-    16px
-    max(14px,env(safe-area-inset-bottom));
-  overflow:hidden;
-}
-
-#p-top {
-  width:100%;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+  overflow-y:auto;
+  padding:14px;
   gap:10px;
+  overscroll-behavior:contain;
 }
 
-#p-identity {
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
+#p-main h2{font-size:22px}
 
-#p-who {
-  margin:0;
-  font-size:20px;
-}
-
-#p-stat {
-  font-size:16px;
-  color:var(--mute);
-}
-
-#p-help {
+#p-help{
   color:var(--mute);
   font-size:14px;
-  min-height:20px;
 }
 
-#p-controls {
-  width:100%;
-  flex:1;
-  min-height:0;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  gap:14px;
-}
-
-.controller-layout {
+#p-fire{
   display:none;
   width:100%;
-  height:100%;
-  min-height:220px;
-  gap:12px;
-  align-items:center;
-  justify-content:space-around;
+  min-height:65px;
+  font-size:30px;
+  border-radius:18px;
 }
 
-.controller-layout.active {
-  display:flex;
-}
-
-.ctrl-group {
+#p-controls{
+  width:100%;
+  max-width:650px;
+  background:#24203f;
+  border:1px solid #47416f;
+  border-radius:24px;
+  padding:12px;
   display:flex;
   flex-direction:column;
-  gap:10px;
-  align-items:center;
-  justify-content:center;
-}
-
-.ctrl-label {
-  color:var(--mute);
-  font-size:12px;
-  letter-spacing:1px;
-}
-
-.ctrl-btn {
-  width:66px;
-  height:66px;
-  border-radius:20px;
-  background:#39345f;
-  color:white;
-  font-size:27px;
-  padding:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border:2px solid #ffffff18;
+  gap:12px;
   touch-action:none;
 }
 
-.ctrl-btn:active,
-.ctrl-btn.pressed {
-  background:#7167bd;
-  transform:scale(.94);
-}
-
-.dpad {
-  display:grid;
-  grid-template-columns:repeat(3,58px);
-  grid-template-rows:repeat(3,58px);
-  gap:5px;
-}
-
-.dpad .ctrl-btn {
-  width:58px;
-  height:58px;
-  border-radius:15px;
-}
-
-.action-grid {
-  display:grid;
-  grid-template-columns:repeat(2,68px);
+.controller-top,
+.controller-bottom{
+  display:flex;
+  justify-content:space-between;
   gap:10px;
 }
 
-.action-grid .ctrl-btn {
-  border-radius:50%;
+.controller-top button,
+.controller-bottom button{
+  flex:1;
+  padding:10px;
+  font-size:15px;
+  border-radius:12px;
+  background:#454064;
+  color:white;
+  min-height:42px;
 }
 
-.ctrl-red {background:#a83b55}
-.ctrl-blue {background:#326db2}
-.ctrl-green {background:#278b65}
-.ctrl-yellow {background:#a57c28}
+.controller-main{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  align-items:center;
+  justify-items:center;
+  gap:6px;
+}
 
-#swipe-area {
-  display:none;
-  width:100%;
-  height:100%;
-  min-height:220px;
-  border:2px dashed #aaa6c966;
-  border-radius:24px;
-  background:#ffffff08;
+.stick-wrap{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+}
+
+.stick-wrap small{
+  font-size:10px;
+  letter-spacing:1px;
+  color:var(--mute);
+}
+
+.stick{
+  width:min(27vw,125px);
+  height:min(27vw,125px);
+  min-width:90px;
+  min-height:90px;
+  border-radius:50%;
+  background:#393454;
+  border:3px solid #625b83;
   position:relative;
   touch-action:none;
-  overflow:hidden;
-}
-
-#swipe-area.active {
   display:flex;
   align-items:center;
   justify-content:center;
 }
 
-#swipe-area span {
-  color:var(--mute);
-  font-size:20px;
-  pointer-events:none;
+.stick:before{
+  content:"";
+  position:absolute;
+  width:65%;
+  height:65%;
+  border:1px dashed #716b91;
+  border-radius:50%;
 }
 
-#p-controls button {
+.stick-knob{
+  width:43%;
+  height:43%;
+  border-radius:50%;
+  background:linear-gradient(145deg,#aaa4c8,#615a85);
+  border:3px solid #d1cce5;
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+  box-shadow:0 4px 12px #0007;
+}
+
+.face-buttons{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+  align-items:center;
+  justify-items:center;
+}
+
+.face-buttons button{
+  width:43px;
+  height:43px;
+  padding:0;
+  border-radius:50%;
+  font-size:17px;
+  color:white;
+  background:#514a77;
+  border:2px solid #77709a;
   touch-action:none;
 }
 
-#p-fire {
-  width:100%;
-  flex:1;
-  font-size:48px;
-  border-radius:28px;
-  display:none;
+.face-buttons button[data-btn="Y"]{background:#b28c35}
+.face-buttons button[data-btn="B"]{background:#347ac2}
+.face-buttons button[data-btn="A"]{background:#339b70}
+.face-buttons button[data-btn="X"]{background:#b74b69}
+
+.controller-top button:active,
+.controller-bottom button:active,
+.face-buttons button:active{
+  transform:scale(.94);
+  filter:brightness(1.3);
 }
 
-#p-bottom {
-  width:100%;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:8px;
+#p-controls button.pressed{
+  filter:brightness(1.5);
+  transform:scale(.94);
+  outline:2px solid white;
 }
 
-#p-bottom button {
+#p-sens{
+  width:120px;
+  accent-color:var(--ok);
+}
+
+#p-main .row button{
   font-size:15px;
-  padding:11px 15px;
+  padding:10px 16px;
 }
 
-#p-sens-wrap {
-  color:var(--mute);
-  font-size:12px;
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-
-#p-sens {
-  width:90px;
-}
-
-#p-ready {
-  background:var(--ok);
-  color:#102b30;
-}
-
-#p-cal {
-  gap:16px;
-}
-
-#p-cal h2 {
-  margin:0;
-}
-
-#p-touch-hint {
-  color:var(--mute);
-  font-size:13px;
-}
-
-/* RACING CONTROLLER */
-
-.trigger-row {
-  display:flex;
-  width:100%;
-  justify-content:space-between;
-  gap:12px;
-}
-
-.trigger-row button {
-  flex:1;
-  min-height:65px;
-}
-
-.steer-row {
-  display:flex;
-  width:100%;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-}
-
-.steer-row .ctrl-btn {
-  width:85px;
-  height:85px;
-}
-
-#p-nitro {
-  width:85px;
-  height:85px;
-  border-radius:50%;
-  background:#236fb8;
-}
-
-/* HOST */
-
-#mute {
-  position:fixed;
-  top:10px;
-  right:10px;
-  z-index:9;
-  padding:6px 14px;
-  font-size:16px;
-}
-
-@media(max-width:600px) {
-  .scr {padding:14px}
-  .pin {font-size:48px}
-  .gc {width:160px;padding:12px}
-  .gc .ic {font-size:40px}
+@media(max-height:650px){
+  #p-main{gap:6px;padding:8px}
+  #p-controls{gap:7px;padding:8px}
+  .stick{
+    width:90px;
+    height:90px;
+    min-width:90px;
+    min-height:90px;
+  }
+  .face-buttons button{width:36px;height:36px}
 }
 </style>
 </head>
 
 <body>
 
-<button id="mute" class="alt">Sound on</button>
+<!-- HOST -->
 
-<!-- HOST HOME -->
+<button id="mute" class="alt"
+style="position:fixed;top:10px;right:10px;z-index:9;padding:6px 14px;font-size:16px">
+Sound on
+</button>
 
 <div id="h-home" class="scr">
   <h1>MotionPlay</h1>
-
   <p style="color:var(--mute);margin:0">
     Your phone is the controller. This screen is the console.
   </p>
 
   <div class="card">
-    <b>Choose your game</b><br>
+    <b>Motion Racer</b><br>
     <span style="color:var(--mute)">
-      Connect your phones and play together.
+      Tilt to steer. Dodge cones, grab coins. 45 seconds.
     </span>
   </div>
 
@@ -506,14 +353,11 @@ canvas {
   <p id="cfgwarn" style="color:#ff8a8a"></p>
 </div>
 
-<!-- HOST LOBBY -->
-
 <div id="h-lobby" class="scr">
   <div class="row" style="align-items:center;gap:40px">
     <div id="qr"></div>
-
     <div>
-      <div style="color:var(--mute)">Scan, or enter the PIN</div>
+      <div style="color:var(--mute)">Scan, or open the site and enter</div>
       <div class="pin" id="pin"></div>
       <div id="url" style="color:var(--mute);font-size:14px"></div>
     </div>
@@ -544,257 +388,164 @@ canvas {
 <div id="h-res" class="scr">
   <h1 id="win"></h1>
   <div id="rank" class="row"></div>
-
   <div class="row">
     <button id="b-again">Rematch</button>
     <button id="b-lobby" class="alt">Back to lobby</button>
   </div>
 </div>
 
-<!-- PHONE JOIN -->
+
+<!-- PHONE -->
 
 <div id="p-join" class="scr">
   <h1 style="font-size:44px">Join game</h1>
-  <input id="p-pin" placeholder="Room PIN" maxlength="4">
+  <input id="p-pin" placeholder="Room PIN" maxlength="4" autocapitalize="characters">
   <input id="p-name" placeholder="Your name" maxlength="12">
   <button id="p-go">Join</button>
   <div id="p-err" style="color:#ff8a8a"></div>
 </div>
 
-<!-- PHONE CALIBRATION -->
-
 <div id="p-cal" class="scr">
-  <h2>Calibrate your controller</h2>
+  <h2>Hold the phone upright, like a steering wheel</h2>
   <p style="color:var(--mute)">
-    Hold your phone comfortably. Press calibrate to set the neutral position.
+    Then press Calibrate. You can recalibrate any time.
   </p>
   <button id="p-calbtn">Calibrate</button>
-  <button id="p-skipcal" class="alt">Use touchscreen controls</button>
 </div>
 
-<!-- PHONE CONTROLLER -->
-
 <div id="p-main" class="scr">
+  <div class="dot" id="p-dot" style="width:48px;height:48px"></div>
+  <h2 id="p-who" style="margin:0"></h2>
+  <div id="p-stat" style="font-size:20px">Connected</div>
+  <div id="p-help">Use the controls to play.</div>
 
-  <div id="p-top">
-    <div id="p-identity">
-      <div class="dot" id="p-dot" style="width:42px;height:42px"></div>
-      <div style="text-align:left">
-        <h2 id="p-who">Player</h2>
-        <div id="p-stat">Connected</div>
-      </div>
-    </div>
+  <button id="p-fire">FIRE</button>
 
-    <div id="p-touch-hint">CONTROLLER</div>
-  </div>
-
-  <div id="p-help">Waiting for game selection.</div>
+  <!-- GAMEPAD CONTROLS -->
 
   <div id="p-controls">
 
-    <!-- DEFAULT TILT -->
-
-    <div class="controller-layout" id="layout-tilt">
-      <div class="ctrl-group">
-        <div class="ctrl-label">STEERING</div>
-        <div class="dpad">
-          <span></span>
-          <button class="ctrl-btn" data-control="up">↑</button>
-          <span></span>
-          <button class="ctrl-btn" data-control="left">←</button>
-          <button class="ctrl-btn" data-control="center">●</button>
-          <button class="ctrl-btn" data-control="right">→</button>
-          <span></span>
-          <button class="ctrl-btn" data-control="down">↓</button>
-          <span></span>
-        </div>
-      </div>
-      <button id="p-fire" class="ctrl-btn">FIRE</button>
+    <div class="controller-top">
+      <button data-btn="L1">L1</button>
+      <button data-btn="L2">L2</button>
+      <button data-btn="R2">R2</button>
+      <button data-btn="R1">R1</button>
     </div>
 
-    <!-- FRUIT NINJA -->
+    <div class="controller-main">
 
-    <div class="controller-layout" id="layout-fruit">
-      <div id="swipe-area">
-        <span>SWIPE TO SLICE</span>
+      <div class="stick-wrap">
+        <small>LEFT STICK</small>
+        <div class="stick" id="p-stick-left" data-stick="left">
+          <div class="stick-knob" id="p-knob-left"></div>
+        </div>
       </div>
+
+      <div class="face-buttons">
+        <button data-btn="Y">Y</button>
+        <button data-btn="X">X</button>
+        <button data-btn="B">B</button>
+        <button data-btn="A">A</button>
+      </div>
+
+      <div class="stick-wrap">
+        <small>RIGHT STICK</small>
+        <div class="stick" id="p-stick-right" data-stick="right">
+          <div class="stick-knob" id="p-knob-right"></div>
+        </div>
+      </div>
+
     </div>
 
-    <!-- PLATFORMER -->
-
-    <div class="controller-layout" id="layout-platform">
-      <div class="ctrl-group">
-        <div class="ctrl-label">MOVEMENT</div>
-        <div class="dpad">
-          <span></span>
-          <button class="ctrl-btn" data-control="up">↑</button>
-          <span></span>
-          <button class="ctrl-btn" data-control="left">←</button>
-          <span></span>
-          <button class="ctrl-btn" data-control="right">→</button>
-          <span></span>
-          <button class="ctrl-btn" data-control="down">↓</button>
-          <span></span>
-        </div>
-      </div>
-
-      <div class="ctrl-group">
-        <div class="ctrl-label">ACTIONS</div>
-        <div class="action-grid">
-          <button class="ctrl-btn ctrl-blue" data-control="a">A</button>
-          <button class="ctrl-btn ctrl-red" data-control="b">B</button>
-          <button class="ctrl-btn ctrl-green" data-control="x">X</button>
-          <button class="ctrl-btn ctrl-yellow" data-control="y">Y</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- FIGHTING -->
-
-    <div class="controller-layout" id="layout-fight">
-      <div class="ctrl-group">
-        <div class="ctrl-label">MOVEMENT</div>
-        <div class="dpad">
-          <span></span>
-          <button class="ctrl-btn" data-control="up">↑</button>
-          <span></span>
-          <button class="ctrl-btn" data-control="left">←</button>
-          <span></span>
-          <button class="ctrl-btn" data-control="right">→</button>
-          <span></span>
-          <button class="ctrl-btn" data-control="down">↓</button>
-          <span></span>
-        </div>
-      </div>
-
-      <div class="ctrl-group">
-        <div class="ctrl-label">COMBAT</div>
-        <div class="action-grid">
-          <button class="ctrl-btn ctrl-blue" data-control="punch">P</button>
-          <button class="ctrl-btn ctrl-red" data-control="kick">K</button>
-          <button class="ctrl-btn ctrl-green" data-control="block">B</button>
-          <button class="ctrl-btn ctrl-yellow" data-control="special">S</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- RACING -->
-
-    <div class="controller-layout" id="layout-race">
-      <div class="ctrl-group" style="width:100%">
-        <div class="trigger-row">
-          <button class="alt" data-control="brake">L2<br><small>Brake</small></button>
-          <button class="alt" data-control="accelerate">R2<br><small>Accelerate</small></button>
-        </div>
-
-        <div class="steer-row">
-          <button class="ctrl-btn" data-control="left">←</button>
-          <button id="p-nitro" data-control="nitro">N₂O</button>
-          <button class="ctrl-btn" data-control="right">→</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- GENERIC BUTTON CONTROLLER -->
-
-    <div class="controller-layout" id="layout-buttons">
-      <div class="ctrl-group">
-        <div class="ctrl-label">MOVEMENT</div>
-        <div class="dpad">
-          <span></span>
-          <button class="ctrl-btn" data-control="up">↑</button>
-          <span></span>
-          <button class="ctrl-btn" data-control="left">←</button>
-          <span></span>
-          <button class="ctrl-btn" data-control="right">→</button>
-          <span></span>
-          <button class="ctrl-btn" data-control="down">↓</button>
-          <span></span>
-        </div>
-      </div>
-
-      <div class="ctrl-group">
-        <div class="ctrl-label">ACTIONS</div>
-        <div class="action-grid">
-          <button class="ctrl-btn ctrl-blue" data-control="a">A</button>
-          <button class="ctrl-btn ctrl-red" data-control="b">B</button>
-          <button class="ctrl-btn ctrl-green" data-control="x">X</button>
-          <button class="ctrl-btn ctrl-yellow" data-control="y">Y</button>
-        </div>
-      </div>
+    <div class="controller-bottom">
+      <button data-btn="SELECT">SELECT</button>
+      <button data-btn="START">START</button>
     </div>
 
   </div>
 
-  <div id="p-bottom">
-    <div id="p-sens-wrap">
-      Sensitivity
-      <input type="range" id="p-sens" min="50" max="200" value="100">
-    </div>
+  <label style="color:var(--mute);font-size:13px">
+    Tilt sensitivity
+    <input type="range" id="p-sens" min="50" max="200" value="100">
+  </label>
 
+  <div class="row">
     <button id="p-ready">Ready</button>
-    <button id="p-recal" class="alt">Calibrate</button>
+    <button id="p-recal" class="alt">Recalibrate</button>
   </div>
 </div>
 
-<!-- REQUIRED LOCAL FILES -->
+
+<!-- LOCAL FILES -->
 
 <script src="config.js"></script>
 <script src="audio.js"></script>
 <script src="games.js"></script>
 
+<!-- SUPABASE CLIENT -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 
 <script>
 "use strict";
 
-const $ = id => document.getElementById(id);
+const $=id=>document.getElementById(id);
 
-const COLORS = [
+const COLORS=[
   "#ff5d5d","#2ec4b6","#ffd23f","#9b7bff",
-  "#ff9f43","#ff7eb6","#6bcb77","#4dabf7"
+  "#ff9f43","#ff7eb6","#6bcB77","#4dabf7"
 ];
 
-const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
-
-const show = id => {
-  document.querySelectorAll(".scr").forEach(s => {
-    s.classList.toggle("on",s.id===id);
-  });
+const show=id=>{
+  document.querySelectorAll(".scr").forEach(
+    s=>s.classList.toggle("on",s.id===id)
+  );
 };
 
-const CFG = window.CONFIG || {};
+const CFG=window.CONFIG||{};
 
-const ok = !!(
-  CFG.SUPABASE_URL &&
-  CFG.SUPABASE_ANON_KEY &&
+if(
+  typeof GAMES==="undefined"||
+  typeof Sfx==="undefined"||
+  !window.CONFIG
+){
+  document.body.insertAdjacentHTML(
+    "afterbegin",
+    '<div style="position:fixed;z-index:99;top:0;left:0;right:0;background:#b3261e;color:#fff;padding:10px;text-align:center">Missing files: index.html, config.js, games.js and audio.js must be uploaded together in the same folder.</div>'
+  );
+}
+
+const ok=!!(
+  CFG.SUPABASE_URL&&
+  CFG.SUPABASE_ANON_KEY&&
   !CFG.SUPABASE_URL.includes("YOUR-")
 );
 
-const sb = ok && window.supabase
-  ? window.supabase.createClient(
+const sb=ok&&window.supabase
+  ?window.supabase.createClient(
       CFG.SUPABASE_URL,
       CFG.SUPABASE_ANON_KEY,
       {realtime:{params:{eventsPerSecond:30}}}
     )
-  : null;
+  :null;
 
-const qs = new URLSearchParams(location.search);
+const qs=new URLSearchParams(location.search);
 
-if (typeof GAMES === "undefined" || typeof Sfx === "undefined") {
-  document.body.insertAdjacentHTML(
-    "afterbegin",
-    '<div style="position:fixed;z-index:99;top:0;left:0;right:0;background:#b3261e;color:#fff;padding:10px;text-align:center">Missing games.js or audio.js. Keep all project files in the same folder.</div>'
-  );
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+if(ok&&!sb){
+  $("cfgwarn").textContent=
+    "Supabase library failed to load. Check your internet connection.";
 }
 
-/* --------------------------------------------------
-   MOTION INPUT
--------------------------------------------------- */
 
-class Motion {
-  constructor(o={}) {
+/* MOTION ENGINE */
+
+class Motion{
+
+  constructor(o={}){
     this.sens=o.sens||1;
     this.dead=o.dead??0.06;
     this.smooth=o.smooth||0.25;
@@ -809,23 +560,38 @@ class Motion {
     this.y=0;
     this.shake=false;
     this.last=0;
+
     this.has=false;
     this.thr=o.thr||22;
   }
 
-  start() {
+  start(){
+
     addEventListener("deviceorientation",e=>{
       if(e.gamma==null)return;
 
       this.has=true;
 
-      const a=(screen.orientation&&screen.orientation.angle)||window.orientation||0;
+      const a=
+        (screen.orientation&&screen.orientation.angle)||
+        window.orientation||
+        0;
 
-      let r=e.gamma,p=e.beta;
+      let r=e.gamma;
+      let p=e.beta;
 
-      if(a===90){r=e.beta;p=-e.gamma}
-      else if(a===270||a===-90){r=-e.beta;p=e.gamma}
-      else if(a===180){r=-e.gamma;p=-e.beta}
+      if(a===90){
+        r=e.beta;
+        p=-e.gamma;
+      }
+      else if(a===270||a===-90){
+        r=-e.beta;
+        p=e.gamma;
+      }
+      else if(a===180){
+        r=-e.gamma;
+        p=-e.beta;
+      }
 
       this.raw=r;
       this.tiltY=p;
@@ -835,7 +601,9 @@ class Motion {
       const g=e.accelerationIncludingGravity;
       if(!g)return;
 
-      const m=Math.hypot(g.x||0,g.y||0,g.z||0)-9.8;
+      const m=
+        Math.hypot(g.x||0,g.y||0,g.z||0)-9.8;
+
       const n=performance.now();
 
       if(Math.abs(m)>this.thr&&n-this.last>600){
@@ -845,19 +613,26 @@ class Motion {
     });
   }
 
-  calibrate() {
+  calibrate(){
     this.off=this.raw;
     this.offY=this.tiltY;
   }
 
-  poll() {
-    let v=clamp((this.raw-this.off)/this.range*this.sens,-1,1);
+  poll(){
+
+    let v=clamp(
+      (this.raw-this.off)/this.range*this.sens,
+      -1,1
+    );
 
     if(Math.abs(v)<this.dead)v=0;
 
     this.s+=(v-this.s)*this.smooth;
 
-    let w=clamp((this.tiltY-this.offY)/this.range*this.sens,-1,1);
+    let w=clamp(
+      (this.tiltY-this.offY)/this.range*this.sens,
+      -1,1
+    );
 
     if(Math.abs(w)<this.dead)w=0;
 
@@ -866,7 +641,7 @@ class Motion {
     const sh=this.shake;
     this.shake=false;
 
-    return {
+    return{
       s:+this.s.toFixed(2),
       y:+this.y.toFixed(2),
       a:sh?1:0
@@ -874,67 +649,35 @@ class Motion {
   }
 }
 
-/* --------------------------------------------------
-   COMMON CONTROLLER STATE
--------------------------------------------------- */
 
-const CONTROL_NAMES = [
-  "up","down","left","right",
-  "a","b","x","y",
-  "punch","kick","block","special",
-  "accelerate","brake","nitro",
-  "center"
-];
+/* MULTIPLAYER FRAMEWORK */
 
-function emptyControls() {
-  const o={};
-  CONTROL_NAMES.forEach(k=>o[k]=false);
-  return o;
-}
+function openRoom(pin,onReady){
 
-function cleanControls(input) {
-  const o=emptyControls();
-
-  if(!input || typeof input!=="object")return o;
-
-  CONTROL_NAMES.forEach(k=>{
-    o[k]=!!input[k];
-  });
-
-  return o;
-}
-
-/* --------------------------------------------------
-   ROOM CHANNEL
--------------------------------------------------- */
-
-function openRoom(pin,onReady) {
   const ch=sb.channel("mp:"+pin,{
     config:{
       broadcast:{self:false},
       presence:{
         key:crypto.randomUUID
-          ? crypto.randomUUID()
-          : String(Math.random())
+          ?crypto.randomUUID()
+          :String(Math.random())
       }
     }
   });
 
   ch.subscribe(st=>{
-    if(st==="SUBSCRIBED" && onReady)onReady();
+    if(st==="SUBSCRIBED"&&onReady)onReady();
   });
 
   return ch;
 }
 
-/* ==================================================
-   HOST
-================================================== */
 
-if(!qs.get("room")) {
+/* HOST */
 
-  let ch;
-  let pin;
+if(!qs.get("room")){
+
+  let ch,pin;
   let players=new Map();
   let phase="lobby";
   let mode="multi";
@@ -944,18 +687,23 @@ if(!qs.get("room")) {
   let G="racer";
   let raf;
   let sendT=0;
-  let countdownTimer;
 
   const DUR=45;
 
   const TRACK=(()=>{
     let s=7;
-    const r=()=> (s=(s*16807)%2147483647)/2147483647;
+    const r=()=>(
+      s=(s*16807)%2147483647
+    )/2147483647;
+
     const t=[];
 
     for(let i=1;i<400;i++){
       t.push({z:i*16,x:r()*1.7-.85,t:"o"});
-      if(r()<.7)t.push({z:i*16+8,x:r()*1.7-.85,t:"c"});
+
+      if(r()<.7){
+        t.push({z:i*16+8,x:r()*1.7-.85,t:"c"});
+      }
     }
 
     return t;
@@ -963,8 +711,20 @@ if(!qs.get("room")) {
 
   show("h-home");
 
-  addEventListener("keydown",e=>keys[e.key]=1);
-  addEventListener("keyup",e=>keys[e.key]=0);
+  setTimeout(renderPick);
+
+  if(!ok){
+    $("cfgwarn").textContent=
+      "Add your Supabase URL and publishable key in config.js to enable phones. Keyboard play still works in Single player.";
+  }
+
+  addEventListener("keydown",e=>{
+    keys[e.key]=1;
+  });
+
+  addEventListener("keyup",e=>{
+    keys[e.key]=0;
+  });
 
   addEventListener("mousemove",e=>{
     mouse.x=e.clientX;
@@ -976,67 +736,65 @@ if(!qs.get("room")) {
   });
 
   $("mute").onclick=()=>{
-    if(typeof Sfx!=="undefined") {
-      Sfx.muted=!Sfx.muted;
-      $("mute").textContent=Sfx.muted?"Sound off":"Sound on";
-    }
+    Sfx.muted=!Sfx.muted;
+    $("mute").textContent=
+      Sfx.muted?"Sound off":"Sound on";
   };
 
-  const send=(event,payload)=>{
-    if(ch)ch.send({type:"broadcast",event,payload});
-  };
+  const send=(event,payload)=>
+    ch&&ch.send({
+      type:"broadcast",
+      event,
+      payload
+    });
 
-  function safeSend(event,payload) {
-    send(event,payload);
-  }
 
-  function pick(id) {
-    if(!GAMES[id])return;
-
+  function pick(id){
     G=id;
-
-    safeSend("phase",{phase,g:G});
+    send("phase",{phase,g:G});
     renderPick();
   }
 
-  function renderPick() {
-    ["picker","picker2"].forEach(id=>{
-      const el=$(id);
+
+  function renderPick(){
+
+    ["picker","picker2"].forEach(i=>{
+
+      const el=$(i);
       el.innerHTML="";
 
-      for(const gameId in GAMES) {
-        const o=GAMES[gameId];
+      for(const id in GAMES){
+
+        const o=GAMES[id];
         const d=document.createElement("div");
 
-        d.className="gc"+(gameId===G?" sel":"");
+        d.className="gc"+(id===G?" sel":"");
         d.style.setProperty("--c",o.c);
 
-        const icon=document.createElement("div");
-        icon.className="ic";
-        icon.textContent=o.icon;
+        d.innerHTML=`
+          <div class="ic">${o.icon}</div>
+          <b>${o.name}</b>
+          <small>${o.desc}</small>
+          <small>${o.help}</small>
+        `;
 
-        const title=document.createElement("b");
-        title.textContent=o.name;
-
-        const desc=document.createElement("small");
-        desc.textContent=o.desc;
-
-        const help=document.createElement("small");
-        help.textContent=o.help;
-
-        d.append(icon,title,desc,help);
-        d.onclick=()=>pick(gameId);
+        d.onclick=()=>pick(id);
 
         el.appendChild(d);
       }
     });
   }
 
-  function confetti() {
+
+  function confetti(){
+
     for(let i=0;i<40;i++){
+
       const c=document.createElement("span");
+
       c.className="cf";
       c.textContent=["🎉","⭐","✨","🏆"][i%4];
+
       c.style.left=Math.random()*100+"vw";
       c.style.animationDelay=Math.random()*1.5+"s";
 
@@ -1046,17 +804,22 @@ if(!qs.get("room")) {
     }
   }
 
-  function makeRoom(m) {
-    if(m==="multi" && !sb) {
-      $("cfgwarn").textContent="Supabase is not configured correctly. Check config.js.";
+
+  function makeRoom(m){
+
+    if(m==="multi"&&!sb){
+      $("cfgwarn").textContent=
+        "Supabase is not configured correctly. Check config.js.";
       return;
     }
 
-    if(ch)ch.unsubscribe();
-
     mode=m;
 
-    pin=Math.random().toString(36).slice(2,6).toUpperCase().replace(/[01OI]/g,"X");
+    pin=Math.random()
+      .toString(36)
+      .slice(2,6)
+      .toUpperCase()
+      .replace(/[01OI]/g,"X");
 
     $("pin").textContent=pin;
 
@@ -1065,66 +828,108 @@ if(!qs.get("room")) {
     $("url").textContent=u;
     $("qr").innerHTML="";
 
-    if(typeof QRCode!=="undefined") {
-      new QRCode($("qr"),{text:u,width:200,height:200});
-    }
+    new QRCode($("qr"),{
+      text:u,
+      width:200,
+      height:200
+    });
 
     show("h-lobby");
+
     players.clear();
 
-    if(m==="single")addPlayer("kb","Keyboard",true);
+    if(m==="single"){
+      addPlayer("kb","Keyboard",true);
+    }
 
-    if(m==="multi" && sb) {
-      ch=openRoom(pin,()=>ch.track({host:1}));
+    if(ok){
+
+      ch=openRoom(pin,()=>{
+        ch.track({host:1});
+      });
 
       ch.on("broadcast",{event:"hello"},({payload:p})=>{
-        if(!p || !p.id)return;
 
         addPlayer(p.id,p.name);
 
         const q=players.get(p.id);
 
-        if(q)send("welcome",{
-          id:p.id,n:q.n,c:q.c,phase,g:G
-        });
+        if(q){
+          send("welcome",{
+            id:p.id,
+            n:q.n,
+            c:q.c,
+            phase,
+            g:G
+          });
+        }
       });
 
+
       ch.on("broadcast",{event:"ready"},({payload:p})=>{
+
         const q=players.get(p.id);
 
-        if(q) {
-          q.ready=!!p.r;
+        if(q){
+          q.ready=p.r;
           lobby();
         }
       });
 
+
       ch.on("broadcast",{event:"in"},({payload:p})=>{
+
         const q=players.get(p.id);
-        if(!q)return;
 
-        q.in={
-          s:clamp(+p.s||0,-1,1),
-          y:clamp(+p.y||0,-1,1),
-          a:p.a?1:0
-        };
+        if(q){
 
-        q.controls=cleanControls(p.controls);
-        q.swipes=Array.isArray(p.swipes)?p.swipes.slice(0,4):[];
+          q.in={
+            s:clamp(+p.s||0,-1,1),
+            y:clamp(+p.y||0,-1,1),
+            a:p.a?1:0
+          };
 
-        q.seen=performance.now();
+          // New gamepad input from the phone.
 
-        if(p.a) {
-          q.fire=1;
-          q.rep=+p.rt||0;
+          const incoming=p.pad||{};
+
+          const buttons=Array.isArray(incoming.buttons)
+            ?incoming.buttons.filter(x=>typeof x==="string").slice(0,12)
+            :[];
+
+          q.pad={
+            x:clamp(Number(incoming.x)||0,-1,1),
+            y:clamp(Number(incoming.y)||0,-1,1),
+            rx:clamp(Number(incoming.rx)||0,-1,1),
+            ry:clamp(Number(incoming.ry)||0,-1,1),
+            buttons
+          };
+
+          // A and X can also trigger the legacy FIRE input.
+
+          if(
+            p.a||
+            buttons.includes("A")||
+            buttons.includes("X")
+          ){
+            q.fire=1;
+            q.rep=+p.rt||0;
+          }
+
+          q.seen=performance.now();
         }
       });
 
+
       ch.on("presence",{event:"sync"},()=>{
+
         const on=new Set();
 
-        Object.values(ch.presenceState()).flat().forEach(x=>{
-          if(x.id)on.add(x.id);
-        });
+        Object.values(ch.presenceState())
+          .flat()
+          .forEach(x=>{
+            if(x.id)on.add(x.id);
+          });
 
         players.forEach((q,id)=>{
           if(id!=="kb")q.online=on.has(id);
@@ -1132,37 +937,25 @@ if(!qs.get("room")) {
 
         lobby();
       });
-
-      ch.on("broadcast",{event:"full"},({payload:p})=>{
-        if(p && p.id)send("kick",{id:p.id});
-      });
-
-      ch.on("broadcast",{event:"disconnect"},({payload:p})=>{
-        const q=players.get(p.id);
-        if(q) {
-          q.online=false;
-          q.ready=false;
-          lobby();
-        }
-      });
     }
 
     lobby();
   }
 
-  function addPlayer(id,name,kb) {
+
+  function addPlayer(id,name,kb){
+
     let q=players.get(id);
 
-    if(q) {
+    if(q){
       q.online=true;
       q.name=name||q.name;
       lobby();
       return;
     }
 
-    if(players.size>=8) {
-      send("full",{id});
-      return;
+    if(players.size>=8){
+      return send("full",{id});
     }
 
     const n=players.size+1;
@@ -1177,8 +970,16 @@ if(!qs.get("room")) {
       online:true,
 
       in:{s:0,y:0,a:0},
-      controls:emptyControls(),
-      swipes:[],
+
+      // Gamepad state shared with future games.
+
+      pad:{
+        x:0,
+        y:0,
+        rx:0,
+        ry:0,
+        buttons:[]
+      },
 
       x:0,
       dist:0,
@@ -1186,47 +987,42 @@ if(!qs.get("room")) {
       speed:1,
       hit:0,
       idx:0,
-      score:0,
-      fire:0,
-      seen:performance.now()
+      score:0
     });
 
-    if(!kb && typeof Sfx!=="undefined")Sfx.play("join");
+    if(!kb)Sfx.play("join");
 
     lobby();
   }
 
-  function lobby() {
+
+  function lobby(){
+
     $("plist").innerHTML="";
 
     players.forEach(q=>{
+
       const d=document.createElement("div");
 
       d.className="pl"+(q.online?"":" off");
 
-      if(q.fresh) {
+      if(q.fresh){
         d.style.animation="pop .5s";
         q.fresh=0;
       }
 
-      const dot=document.createElement("span");
-      dot.className="dot";
-      dot.style.background=q.c;
+      d.innerHTML=`
+        <span class="dot" style="background:${q.c}"></span>
+        <b>P${q.n} ${q.name.replace(/</g,"&lt;")}</b>
+        <span style="color:${q.ready?"var(--ok)":"var(--mute)"}">
+          ${q.online?q.ready?"Ready":"Not ready":"Disconnected"}
+        </span>
+      `;
 
-      const name=document.createElement("b");
-      name.textContent=`P${q.n} ${q.name}`;
+      if(q.id!=="kb"){
 
-      const status=document.createElement("span");
-
-      status.style.color=q.ready?"var(--ok)":"var(--mute)";
-      status.textContent=q.online
-        ?q.ready?"Ready":"Not ready"
-        :"Disconnected";
-
-      d.append(dot,name,status);
-
-      if(q.id!=="kb") {
         const b=document.createElement("button");
+
         b.className="alt x";
         b.textContent="Remove";
 
@@ -1245,46 +1041,47 @@ if(!qs.get("room")) {
     const all=[...players.values()];
 
     $("b-start").disabled=!(
-      all.length &&
+      all.length&&
       all.every(q=>q.ready&&q.online)
     );
-
-    $("lmsg").textContent=
-      all.length
-        ?`${all.length} player(s) connected. Everyone must be ready.`
-        :"Waiting for players.";
 
     send("phase",{phase,g:G});
   }
 
+
   $("b-single").onclick=()=>makeRoom("single");
   $("b-multi").onclick=()=>makeRoom("multi");
 
+
   $("b-close").onclick=()=>{
+
     send("closed",{});
 
-    if(ch)ch.unsubscribe();
+    ch&&ch.unsubscribe();
 
     cancelAnimationFrame(raf);
-    clearInterval(countdownTimer);
 
-    ch=null;
     show("h-home");
   };
 
+
   $("b-start").onclick=()=>{
-    players.forEach(q=>{
-      Object.assign(q,{
-        x:0,dist:0,coins:0,speed:1,
-        hit:0,idx:0,score:0,fire:0,
-        controls:emptyControls(),
-        swipes:[]
-      });
-    });
+
+    players.forEach(q=>Object.assign(q,{
+      x:0,
+      dist:0,
+      coins:0,
+      speed:1,
+      hit:0,
+      idx:0,
+      score:0,
+      fire:0
+    }));
 
     let c=3;
 
     phase="count";
+
     send("phase",{phase,g:G});
 
     show("h-count");
@@ -1292,31 +1089,39 @@ if(!qs.get("room")) {
     $("cnt").style.fontSize="min(10vw,90px)";
     $("cnt").textContent=GAMES[G].icon+" "+GAMES[G].name;
 
-    if(typeof Sfx!=="undefined")Sfx.play("start");
+    Sfx.play("start");
 
     setTimeout(()=>{
+
       $("cnt").style.fontSize="";
       $("cnt").textContent=c;
 
-      if(typeof Sfx!=="undefined")Sfx.play("count");
+      Sfx.play("count");
 
-      countdownTimer=setInterval(()=>{
+      const t=setInterval(()=>{
+
         c--;
 
-        if(c>0) {
+        if(c>0){
           $("cnt").textContent=c;
-          if(typeof Sfx!=="undefined")Sfx.play("count");
-        } else {
-          clearInterval(countdownTimer);
+          Sfx.play("count");
+        }
+        else{
+          clearInterval(t);
           begin();
         }
+
       },1000);
+
     },1400);
   };
 
+
   $("b-again").onclick=()=>$("b-start").onclick();
 
+
   $("b-lobby").onclick=()=>{
+
     phase="lobby";
 
     players.forEach(q=>{
@@ -1324,10 +1129,13 @@ if(!qs.get("room")) {
     });
 
     show("h-lobby");
+
     lobby();
   };
 
-  function begin() {
+
+  function begin(){
+
     phase="play";
 
     send("phase",{phase,g:G});
@@ -1341,20 +1149,23 @@ if(!qs.get("room")) {
 
     const gm=GAMES[G];
 
-    gm.init&&gm.init([...players.values()],{
-      W:innerWidth,
-      H:innerHeight
-    });
+    gm.init&&gm.init(
+      [...players.values()],
+      {W:innerWidth,H:innerHeight}
+    );
 
     loop();
   }
 
-  function loop() {
+
+  function loop(){
+
     if(G==="racer")return racerLoop();
 
     const gm=GAMES[G];
 
     const now=performance.now();
+
     const dt=Math.min(.05,(now-game.last)/1000);
 
     game.last=now;
@@ -1364,44 +1175,66 @@ if(!qs.get("room")) {
     const P=[...players.values()];
 
     const cv=$("cv");
+
     const W=cv.width=innerWidth;
     const H=cv.height=innerHeight;
 
     P.forEach(p=>{
-      if(p.id==="kb") {
-        if(mouse.click||(keys[" "]&&!p.kf))p.fire=1;
+
+      if(p.id==="kb"){
+
+        if(mouse.click||(keys[" "]&&!p.kf)){
+          p.fire=1;
+        }
+
         p.kf=keys[" "];
 
-        p.controls=emptyControls();
+        // Keyboard gamepad mapping for single-player testing.
 
-        p.controls.left=!!(keys.ArrowLeft||keys.a);
-        p.controls.right=!!(keys.ArrowRight||keys.d);
-        p.controls.up=!!keys.ArrowUp;
-        p.controls.down=!!keys.ArrowDown;
+        p.pad={
+          x:(keys.ArrowRight||keys.d?1:0)-
+            (keys.ArrowLeft||keys.a?1:0),
 
-        p.controls.a=!!keys[" "];
-        p.controls.b=!!keys.Shift;
+          y:(keys.ArrowDown||keys.s?1:0)-
+            (keys.ArrowUp||keys.w?1:0),
+
+          rx:0,
+          ry:0,
+
+          buttons:[
+            ...(keys[" "]?["A"]:[]),
+            ...(keys.Shift?["B"]:[]),
+            ...(keys.Enter?["START"]:[])
+          ]
+        };
       }
     });
 
     mouse.click=0;
 
     gm.update(dt,now,left,P,{
-      W,H,keys,mouse,send,
-      mode,
-      controls:P.map(p=>p.controls)
+      W,
+      H,
+      keys,
+      mouse,
+      send
     });
 
     gm.draw(
       cv.getContext("2d"),
-      W,H,P,left,
-      {mode}
+      W,
+      H,
+      P,
+      left
     );
 
     $("hud").textContent=
-      gm.hud?gm.hud():Math.max(0,Math.ceil(left))+"s";
+      gm.hud
+        ?gm.hud()
+        :Math.max(0,Math.ceil(left))+"s";
 
-    if(now-sendT>200) {
+    if(now-sendT>200){
+
       sendT=now;
 
       const sc={};
@@ -1414,15 +1247,16 @@ if(!qs.get("room")) {
       });
     }
 
-    if(left<=0 || gm.over(P))return finish();
+    if(left<=0||gm.over(P))return finish();
 
     raf=requestAnimationFrame(loop);
   }
 
-  /* ORIGINAL MOTION RACER */
 
-  function racerLoop() {
+  function racerLoop(){
+
     const now=performance.now();
+
     const dt=Math.min(.05,(now-game.last)/1000);
 
     game.last=now;
@@ -1430,14 +1264,17 @@ if(!qs.get("room")) {
     const left=DUR-(now-game.t0)/1000;
 
     players.forEach(q=>{
+
       let s=q.in.s;
 
-      if(q.id==="kb") {
+      if(q.id==="kb"){
         s=(keys.ArrowRight||keys.d?1:0)-
           (keys.ArrowLeft||keys.a?1:0);
       }
 
-      if(now-(q.seen||now)>1500&&q.id!=="kb")s=0;
+      if(now-(q.seen||now)>1500&&q.id!=="kb"){
+        s=0;
+      }
 
       q.x=clamp(q.x+s*dt*1.6,-1,1);
 
@@ -1447,62 +1284,87 @@ if(!qs.get("room")) {
 
       q.dist+=q.speed*dt*14;
 
-      while(q.idx<TRACK.length&&TRACK[q.idx].z<q.dist-2)q.idx++;
+      while(
+        q.idx<TRACK.length&&
+        TRACK[q.idx].z<q.dist-2
+      ){
+        q.idx++;
+      }
 
-      for(let i=q.idx;i<TRACK.length&&TRACK[i].z<q.dist+1.5;i++) {
+      for(
+        let i=q.idx;
+        i<TRACK.length&&TRACK[i].z<q.dist+1.5;
+        i++
+      ){
+
         const o=TRACK[i];
 
-        if(o.gone?.[q.id]||
+        if(
+          o.gone?.[q.id]||
           Math.abs(o.z-q.dist)>1.4||
-          Math.abs(o.x-q.x)>.2)continue;
+          Math.abs(o.x-q.x)>.2
+        )continue;
 
         (o.gone=o.gone||{})[q.id]=1;
 
-        if(o.t==="c") {
+        if(o.t==="c"){
           q.coins++;
-          if(typeof Sfx!=="undefined")Sfx.play("point");
-        } else if(q.hit<=0) {
+          Sfx.play("point");
+        }
+        else if(q.hit<=0){
           q.hit=1.2;
           q.dist-=2;
-          if(typeof Sfx!=="undefined")Sfx.play("out");
+          Sfx.play("out");
         }
       }
 
       q.score=Math.floor(q.dist)+q.coins*50;
     });
 
-    drawRacer(left);
+    draw(left);
 
-    if(now-sendT>200) {
+    if(now-sendT>200){
+
       sendT=now;
 
       const sc={};
 
       players.forEach(q=>sc[q.id]=q.score);
 
-      send("scores",{sc,left:Math.ceil(left)});
+      send("scores",{
+        sc,
+        left:Math.ceil(left)
+      });
     }
 
     if(left<=0)return finish();
 
-    raf=requestAnimationFrame(loop);
+    raf=requestAnimationFrame(racerLoop);
   }
 
-  function drawRacer(left) {
+
+  function draw(left){
+
     const cv=$("cv");
+
     const W=cv.width=innerWidth;
     const H=cv.height=innerHeight;
 
     const g=cv.getContext("2d");
+
     const L=[...players.values()];
+
     const w=W/L.length;
 
     g.fillStyle="#1b1830";
     g.fillRect(0,0,W,H);
 
     L.forEach((q,i)=>{
+
       const x0=i*w;
+
       const rw=Math.min(w-16,420);
+
       const rx=x0+(w-rw)/2;
 
       g.fillStyle="#3a3566";
@@ -1510,27 +1372,42 @@ if(!qs.get("room")) {
 
       g.fillStyle="#f6f1e7";
 
-      for(let y=-(q.dist*40%80);y<H;y+=80) {
+      for(
+        let y=-(q.dist*40%80);
+        y<H;
+        y+=80
+      ){
         g.fillRect(rx+rw/2-3,y,6,40);
       }
 
       const py=H*.78;
+
+      const k=40;
+
       const X=v=>rx+rw/2+v*rw*.45;
 
-      for(let j=q.idx;j<TRACK.length;j++) {
+      for(let j=q.idx;j<TRACK.length;j++){
+
         const o=TRACK[j];
-        const y=py-(o.z-q.dist)*40;
+
+        const y=py-(o.z-q.dist)*k;
 
         if(y<-30)break;
+
         if(o.gone?.[q.id]||y>H)continue;
 
-        if(o.t==="c") {
+        if(o.t==="c"){
+
           g.fillStyle="#ffd23f";
+
           g.beginPath();
           g.arc(X(o.x),y,12,0,7);
           g.fill();
-        } else {
+        }
+        else{
+
           g.fillStyle="#ff7a3d";
+
           g.beginPath();
           g.moveTo(X(o.x),y-22);
           g.lineTo(X(o.x)-16,y+14);
@@ -1540,9 +1417,12 @@ if(!qs.get("room")) {
       }
 
       g.save();
+
       g.translate(X(q.x),py);
 
-      g.globalAlpha=q.hit>0&&(q.hit*10|0)%2?.3:1;
+      g.globalAlpha=
+        q.hit>0&&(q.hit*10|0)%2?.3:1;
+
       g.fillStyle=q.c;
       g.fillRect(-16,-28,32,56);
 
@@ -1552,34 +1432,45 @@ if(!qs.get("room")) {
       g.restore();
 
       g.fillStyle=q.c;
-      g.font="700 24px Fredoka,sans-serif";
+      g.font="700 28px Fredoka,sans-serif";
       g.textAlign="center";
-      g.fillText(`P${q.n} ${q.name} ${q.score}`,x0+w/2,80);
+
+      g.fillText(
+        `P${q.n} ${q.name}  ${q.score}`,
+        x0+w/2,
+        80
+      );
     });
 
-    $("hud").textContent=Math.max(0,Math.ceil(left))+"s";
+    $("hud").textContent=
+      Math.max(0,Math.ceil(left))+"s";
   }
 
-  function finish() {
+
+  function finish(){
+
     phase="results";
 
-    const r=[...players.values()].sort((a,b)=>b.score-a.score);
+    const r=[...players.values()]
+      .sort((a,b)=>b.score-a.score);
 
     $("win").textContent=
       r.length>1
         ?`${r[0].name} wins!`
-        :`Score: ${r[0]?.score||0}`;
+        :`Score: ${r[0].score}`;
 
     $("rank").innerHTML=r.map((q,i)=>`
       <div class="card" style="border-top:8px solid ${q.c}">
-        <div style="font-size:30px">${i+1}. ${q.name}</div>
+        <div style="font-size:30px">
+          ${i+1}. ${q.name.replace(/</g,"&lt;")}
+        </div>
         ${q.score} pts
       </div>
     `).join("");
 
     show("h-res");
 
-    if(typeof Sfx!=="undefined")Sfx.play("win");
+    Sfx.play("win");
 
     confetti();
 
@@ -1590,19 +1481,12 @@ if(!qs.get("room")) {
     send("phase",{phase,g:G});
   }
 
-  renderPick();
-
-  if(!ok) {
-    $("cfgwarn").textContent=
-      "Add your Supabase URL and publishable key in config.js to enable phones. Keyboard play still works in Single player.";
-  }
 }
 
-/* ==================================================
-   PHONE
-================================================== */
 
-else {
+/* PHONE CONTROLLER */
+
+else{
 
   const pin=qs.get("room").toUpperCase();
 
@@ -1611,232 +1495,226 @@ else {
   const me={
     id:localStorage.mp_id||
       (localStorage.mp_id=Math.random().toString(36).slice(2)),
+
     name:localStorage.mp_name||""
   };
 
   let ch;
   let ready=false;
-  let touchX=0;
   let fireTap=0;
   let goT=0;
   let useTouch=false;
-  let loopT=null;
-  let activeGame="racer";
-  let controls=emptyControls();
-  let swipeQueue=[];
-  let pointerActive=false;
-  let pointerLast=null;
+  let loopT;
+
+  // Two analog sticks and a set of digital buttons.
+
+  const pad={
+    x:0,
+    y:0,
+    rx:0,
+    ry:0,
+    buttons:{}
+  };
 
   $("mute").style.display="none";
 
   const HELP={
-    racer:"Tilt left and right to steer.",
-    target:"Tilt to aim. Shake or press FIRE.",
-    balance:"Tilt to keep your balance.",
-    reaction:"Wait for green, then shake or press FIRE.",
-    fruit:"Swipe across the screen to slice fruit.",
-    fruitninja:"Swipe across the screen to slice fruit.",
-    platform:"Move with the D-pad. Jump with A.",
-    platformer:"Move with the D-pad. Jump with A.",
-    battle:"Move, punch, kick, block and use special attacks.",
-    fighting:"Move, punch, kick, block and use special attacks.",
-    racing:"Steer, accelerate, brake and use nitro."
+    racer:"Tilt to steer. You can also use the left stick.",
+    target:"Tilt to aim. Shake or press A to shoot.",
+    balance:"Tilt or use the left stick to keep your balance.",
+    reaction:"Wait for green, then shake or press A."
   };
 
-  const GAME_LAYOUT={
-    racer:"tilt",
-    target:"tilt",
-    balance:"tilt",
-    reaction:"tilt",
-    fruit:"fruit",
-    fruitninja:"fruit",
-    platform:"platform",
-    platformer:"platform",
-    battle:"fight",
-    fighting:"fight",
-    racing:"race"
-  };
 
-  function setGame(g) {
+  const setGame=g=>{
+
     if(!g)return;
 
-    activeGame=g.toLowerCase();
+    $("p-help").textContent=
+      HELP[g]||"Use the sticks and action buttons to play.";
+  };
 
-    $("p-help").textContent=HELP[activeGame]||"Use the controller to play.";
 
-    const layout=GAME_LAYOUT[activeGame]||"buttons";
+  // Action buttons.
 
-    document.querySelectorAll(".controller-layout").forEach(el=>{
-      el.classList.remove("active");
+  document.querySelectorAll("#p-controls [data-btn]")
+    .forEach(b=>{
+
+      const name=b.dataset.btn;
+
+      const down=e=>{
+        e.preventDefault();
+
+        pad.buttons[name]=true;
+
+        b.classList.add("pressed");
+
+        try{
+          b.setPointerCapture(e.pointerId);
+        }catch(err){}
+      };
+
+      const up=e=>{
+        e.preventDefault();
+
+        delete pad.buttons[name];
+
+        b.classList.remove("pressed");
+      };
+
+      b.addEventListener("pointerdown",down);
+      b.addEventListener("pointerup",up);
+      b.addEventListener("pointercancel",up);
+      b.addEventListener("lostpointercapture",up);
     });
 
-    const selected=$("layout-"+layout);
 
-    if(selected)selected.classList.add("active");
+  // Analog stick controls.
 
-    if(layout==="tilt" && !M.has) {
-      $("p-help").textContent+=" Use the buttons if motion sensing is unavailable.";
+  function setupStick(side){
+
+    const stick=$("p-stick-"+side);
+    const knob=$("p-knob-"+side);
+
+    const xKey=side==="left"?"x":"rx";
+    const yKey=side==="left"?"y":"ry";
+
+    let active=false;
+
+    function move(e){
+
+      if(!active)return;
+
+      const rect=stick.getBoundingClientRect();
+
+      const cx=rect.left+rect.width/2;
+      const cy=rect.top+rect.height/2;
+
+      const radius=rect.width*.34;
+
+      let dx=(e.clientX-cx)/radius;
+      let dy=(e.clientY-cy)/radius;
+
+      const length=Math.hypot(dx,dy);
+
+      if(length>1){
+        dx/=length;
+        dy/=length;
+      }
+
+      pad[xKey]=+dx.toFixed(2);
+      pad[yKey]=+dy.toFixed(2);
+
+      knob.style.transform=
+        `translate(calc(-50% + ${dx*radius}px),calc(-50% + ${dy*radius}px))`;
     }
-  }
 
-  function pressControl(name,value) {
-    if(!(name in controls))return;
+    function reset(){
 
-    controls[name]=value;
-  }
+      active=false;
 
-  document.querySelectorAll("[data-control]").forEach(button=>{
-    const name=button.dataset.control;
+      pad[xKey]=0;
+      pad[yKey]=0;
 
-    button.addEventListener("pointerdown",e=>{
+      knob.style.transform="translate(-50%,-50%)";
+    }
+
+    stick.addEventListener("pointerdown",e=>{
+
       e.preventDefault();
 
-      button.setPointerCapture?.(e.pointerId);
+      active=true;
 
-      pressControl(name,true);
-      button.classList.add("pressed");
+      try{
+        stick.setPointerCapture(e.pointerId);
+      }catch(err){}
+
+      move(e);
     });
 
-    const release=()=>{
-      pressControl(name,false);
-      button.classList.remove("pressed");
-    };
+    stick.addEventListener("pointermove",move);
 
-    button.addEventListener("pointerup",release);
-    button.addEventListener("pointercancel",release);
-    button.addEventListener("lostpointercapture",release);
-    button.addEventListener("contextmenu",e=>e.preventDefault());
-  });
+    stick.addEventListener("pointerup",reset);
+    stick.addEventListener("pointercancel",reset);
+    stick.addEventListener("lostpointercapture",reset);
+  }
+
+  setupStick("left");
+  setupStick("right");
+
 
   $("p-fire").addEventListener("pointerdown",e=>{
     e.preventDefault();
     fireTap=1;
   });
 
+
   $("p-sens").oninput=e=>{
-    M.sens=Number(e.target.value)/100;
+    M.sens=e.target.value/100;
   };
+
 
   $("p-pin").value=pin;
   $("p-name").value=me.name;
 
   show("p-join");
 
-  if(!ok) {
-    $("p-err").textContent="Backend not configured. Check config.js.";
+  if(!ok){
+    $("p-err").textContent=
+      "Backend not configured (config.js).";
   }
 
-  /* SWIPE INPUT */
-
-  const swipeArea=$("swipe-area");
-
-  swipeArea.addEventListener("pointerdown",e=>{
-    e.preventDefault();
-
-    pointerActive=true;
-    pointerLast={
-      x:e.clientX,
-      y:e.clientY,
-      t:performance.now()
-    };
-
-    swipeArea.setPointerCapture?.(e.pointerId);
-  });
-
-  swipeArea.addEventListener("pointermove",e=>{
-    if(!pointerActive||!pointerLast)return;
-
-    const rect=swipeArea.getBoundingClientRect();
-
-    const point={
-      x:clamp((e.clientX-rect.left)/rect.width,0,1),
-      y:clamp((e.clientY-rect.top)/rect.height,0,1)
-    };
-
-    const last={
-      x:clamp((pointerLast.x-rect.left)/rect.width,0,1),
-      y:clamp((pointerLast.y-rect.top)/rect.height,0,1)
-    };
-
-    swipeQueue.push({
-      x1:last.x,
-      y1:last.y,
-      x2:point.x,
-      y2:point.y
-    });
-
-    if(swipeQueue.length>30)swipeQueue.shift();
-
-    pointerLast={
-      x:e.clientX,
-      y:e.clientY,
-      t:performance.now()
-    };
-  });
-
-  const endSwipe=()=>{
-    pointerActive=false;
-    pointerLast=null;
-  };
-
-  swipeArea.addEventListener("pointerup",endSwipe);
-  swipeArea.addEventListener("pointercancel",endSwipe);
-  swipeArea.addEventListener("lostpointercapture",endSwipe);
-
-  /* JOIN */
 
   $("p-go").onclick=async()=>{
-    if(!ok||!sb) {
-      $("p-err").textContent="Supabase is not configured.";
-      return;
-    }
+
+    if(!ok||!sb)return;
 
     const n=$("p-name").value.trim();
 
-    if(!n) {
-      $("p-err").textContent="Enter your name.";
-      return;
+    if(!n){
+      return $("p-err").textContent="Enter a name.";
     }
 
     me.name=n;
+
     localStorage.mp_name=n;
 
-    $("p-go").disabled=true;
-    $("p-err").textContent="Connecting...";
+    try{
 
-    try {
-      if(typeof DeviceOrientationEvent!=="undefined" &&
-        typeof DeviceOrientationEvent.requestPermission==="function") {
+      if(
+        typeof DeviceMotionEvent!=="undefined"&&
+        DeviceMotionEvent.requestPermission
+      ){
 
         const a=await DeviceOrientationEvent.requestPermission();
 
-        let b="granted";
+        const b=await DeviceMotionEvent.requestPermission();
 
-        if(typeof DeviceMotionEvent!=="undefined" &&
-          typeof DeviceMotionEvent.requestPermission==="function") {
-          b=await DeviceMotionEvent.requestPermission();
-        }
-
-        if(a!=="granted"||b!=="granted")useTouch=true;
+        if(a!=="granted"||b!=="granted")throw 0;
       }
-    } catch(e) {
+    }
+    catch(e){
       useTouch=true;
     }
 
     M.start();
+
     connect();
 
     show("p-cal");
 
     setTimeout(()=>{
-      if(!M.has) {
+
+      if(!M.has){
         useTouch=true;
-        $("p-touch-hint").textContent="TOUCH CONTROLS";
       }
+
     },1500);
   };
 
-  function connect() {
+
+  function connect(){
+
     ch=sb.channel("mp:"+pin,{
       config:{
         broadcast:{self:false},
@@ -1844,39 +1722,45 @@ else {
       }
     });
 
+
     const hi=()=>ch.send({
       type:"broadcast",
       event:"hello",
       payload:me
     });
 
+
     ch.on("broadcast",{event:"welcome"},({payload:p})=>{
+
       if(p.id!==me.id)return;
 
-      $("p-who").textContent=`P${p.n} · ${me.name}`;
+      $("p-who").textContent=
+        `P${p.n} · ${me.name}`;
+
       $("p-dot").style.background=p.c;
 
       setGame(p.g);
-
-      if(p.phase==="play")show("p-main");
     });
+
 
     ch.on("broadcast",{event:"kick"},({payload:p})=>{
-      if(p.id!==me.id)return;
 
-      clearInterval(loopT);
-      ch.unsubscribe();
+      if(p.id===me.id){
 
-      $("p-err").textContent="You were removed by the host.";
+        ch.unsubscribe();
 
-      show("p-join");
+        clearInterval(loopT);
+
+        $("p-err").textContent=
+          "You were removed by the host.";
+
+        show("p-join");
+      }
     });
 
-    ch.on("broadcast",{event:"full"},()=>{
-      $("p-err").textContent="This room is full.";
-    });
 
     ch.on("broadcast",{event:"closed"},()=>{
+
       clearInterval(loopT);
 
       $("p-err").textContent="Room closed.";
@@ -1884,85 +1768,104 @@ else {
       show("p-join");
     });
 
+
     ch.on("broadcast",{event:"scores"},({payload:p})=>{
+
       $("p-stat").textContent=
-        `Score ${p.sc?.[me.id]??0} · ${p.left}s`;
+        `Score ${p.sc[me.id]??0} · ${p.left}s`;
     });
 
+
     ch.on("broadcast",{event:"go"},()=>{
+
       goT=performance.now();
 
       document.body.style.background="#1fa855";
 
-      setTimeout(()=>document.body.style.background="",700);
+      setTimeout(()=>{
+        document.body.style.background="";
+      },700);
     });
+
 
     ch.on("broadcast",{event:"phase"},({payload:p})=>{
+
       setGame(p.g);
 
-      if(p.phase==="lobby") {
+      if(p.phase==="lobby"){
+
         ready=false;
+
         $("p-ready").textContent="Ready";
+
         $("p-stat").textContent="In lobby";
-        show("p-main");
       }
 
-      if(p.phase==="count") {
-        $("p-stat").textContent="Get ready...";
-        show("p-main");
+      if(p.phase==="count"){
+        $("p-stat").textContent="Get ready…";
       }
 
-      if(p.phase==="play") {
+      if(p.phase==="play"){
         $("p-stat").textContent="Go!";
-        show("p-main");
-      }
-
-      if(p.phase==="results") {
-        $("p-stat").textContent="Round finished";
       }
     });
 
+
     ch.on("broadcast",{event:"results"},({payload:p})=>{
+
       const i=p.r.findIndex(x=>x.id===me.id);
 
       $("p-stat").textContent=
         `Finished #${i+1} · ${p.r[i]?.s??0} pts`;
     });
 
+
     ch.subscribe(s=>{
-      if(s==="SUBSCRIBED") {
+
+      if(s==="SUBSCRIBED"){
+
         ch.track({id:me.id});
+
         hi();
-        $("p-err").textContent="";
-        $("p-go").disabled=false;
       }
 
-      if(s==="CHANNEL_ERROR"||s==="TIMED_OUT") {
-        $("p-stat").textContent="Connection error. Try joining again.";
-        $("p-go").disabled=false;
+      if(s==="CHANNEL_ERROR"||s==="TIMED_OUT"){
+
+        $("p-stat").textContent="Reconnecting…";
       }
     });
+
 
     clearInterval(loopT);
 
     loopT=setInterval(()=>{
-      if(!ch)return;
 
       const m=M.poll();
 
+      // Tilt is still available for the original games.
+      // The analog sticks are sent separately for gamepad games.
+
       let s=m.s;
 
-      if(useTouch||!M.has) {
-        s=Number(controls.right)-Number(controls.left);
+      if(useTouch||!M.has){
+        s=pad.x;
       }
 
-      const a=m.a||fireTap?1:0;
+      const buttons=Object.keys(pad.buttons)
+        .filter(k=>pad.buttons[k]);
+
+      const a=
+        m.a||
+        fireTap||
+        pad.buttons.A||
+        pad.buttons.X
+          ?1:0;
 
       fireTap=0;
 
-      if(a&&navigator.vibrate)navigator.vibrate(25);
-
-      const swipes=swipeQueue.splice(0,4);
+      if(a&&navigator.vibrate){
+        navigator.vibrate(30);
+      }
 
       ch.send({
         type:"broadcast",
@@ -1972,58 +1875,59 @@ else {
           s,
           y:m.y,
           a,
-          rt:a&&goT?Math.round(performance.now()-goT):0,
-          controls:{...controls},
-          swipes
+          rt:a&&goT
+            ?Math.round(performance.now()-goT)
+            :0,
+
+          // Full gamepad state.
+
+          pad:{
+            x:pad.x,
+            y:pad.y,
+            rx:pad.rx,
+            ry:pad.ry,
+            buttons
+          }
         }
       });
 
       if(a)goT=0;
+
     },50);
   }
 
+
   $("p-calbtn").onclick=()=>{
+
     M.calibrate();
+
     show("p-main");
   };
 
-  $("p-skipcal").onclick=()=>{
-    useTouch=true;
-    show("p-main");
-  };
 
   $("p-recal").onclick=()=>{
     M.calibrate();
   };
 
+
   $("p-ready").onclick=()=>{
+
     ready=!ready;
 
-    $("p-ready").textContent=ready?"Not ready":"Ready";
+    $("p-ready").textContent=
+      ready?"Not ready":"Ready";
 
-    if(ch)ch.send({
+    ch.send({
       type:"broadcast",
       event:"ready",
-      payload:{id:me.id,r:ready}
+      payload:{
+        id:me.id,
+        r:ready
+      }
     });
   };
 
-  addEventListener("pagehide",()=>{
-    clearInterval(loopT);
-
-    if(ch) {
-      ch.send({
-        type:"broadcast",
-        event:"disconnect",
-        payload:{id:me.id}
-      });
-
-      ch.unsubscribe();
-    }
-  });
-
 }
 </script>
-
 </body>
 </html>
