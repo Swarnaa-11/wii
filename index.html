@@ -92,6 +92,7 @@ input{
 .dot{width:26px;height:26px;border-radius:50%}
 .off{opacity:.4}
 .x{margin-left:auto;padding:4px 12px;font-size:16px}
+
 canvas{
   width:100vw;
   height:100vh;
@@ -99,6 +100,7 @@ canvas{
   inset:0;
   display:block;
 }
+
 #hud{
   position:fixed;
   top:12px;
@@ -107,7 +109,9 @@ canvas{
   font-size:36px;
   font-weight:700;
   pointer-events:none;
+  z-index:5;
 }
+
 .big{font-size:min(30vw,260px);font-weight:700}
 
 .gc{
@@ -144,6 +148,73 @@ canvas{
   z-index:20;
 }
 
+/* HOST GAME CONTROL GUIDE */
+
+#game-guide{
+  position:fixed;
+  z-index:8;
+  top:70px;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(680px,calc(100vw - 24px));
+  padding:10px 16px;
+  border-radius:16px;
+  background:rgba(24,21,45,.82);
+  border:1px solid rgba(255,255,255,.2);
+  box-shadow:0 8px 30px #0004;
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  pointer-events:none;
+  text-align:center;
+  display:none;
+}
+#game-guide.visible{display:block}
+#guide-title{
+  font-size:13px;
+  color:var(--mute);
+  text-transform:uppercase;
+  letter-spacing:1.5px;
+  margin-bottom:7px;
+}
+#guide-controls{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:7px;
+}
+.guide-item{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  font-size:13px;
+  color:var(--ink);
+  white-space:nowrap;
+}
+.keycap{
+  min-width:25px;
+  height:25px;
+  padding:2px 7px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:7px;
+  background:#514a77;
+  border:1px solid #8c84b0;
+  color:#fff;
+  font-weight:700;
+  font-size:12px;
+}
+.keycap.a{background:#27845e}
+.keycap.b{background:#347ac2}
+.keycap.x{background:#b74b69}
+.keycap.y{background:#a17a28}
+#guide-note{
+  color:var(--mute);
+  font-size:11px;
+  margin-top:6px;
+}
+
 /* PHONE CONTROLLER */
 
 #p-main{
@@ -159,6 +230,7 @@ canvas{
 #p-help{
   color:var(--mute);
   font-size:14px;
+  max-width:520px;
 }
 
 #p-fire{
@@ -307,6 +379,20 @@ canvas{
   padding:10px 16px;
 }
 
+@media(max-width:600px){
+  #game-guide{
+    top:62px;
+    padding:8px 10px;
+  }
+  .guide-item{font-size:11px}
+  .keycap{
+    min-width:22px;
+    height:22px;
+    font-size:11px;
+  }
+  #guide-note{font-size:10px}
+}
+
 @media(max-height:650px){
   #p-main{gap:6px;padding:8px}
   #p-controls{gap:7px;padding:8px}
@@ -383,6 +469,13 @@ Sound on
 <div id="h-game" class="scr" style="padding:0">
   <canvas id="cv"></canvas>
   <div id="hud"></div>
+
+  <!-- Dynamic controller instructions for the selected game -->
+  <div id="game-guide">
+    <div id="guide-title">CONTROLS</div>
+    <div id="guide-controls"></div>
+    <div id="guide-note"></div>
+  </div>
 </div>
 
 <div id="h-res" class="scr">
@@ -749,6 +842,129 @@ if(!qs.get("room")){
     });
 
 
+  /* GAME CONTROL GUIDE */
+
+  const GUIDE={
+
+    racer:{
+      controls:[
+        ["LEFT STICK","Steer"],
+        ["TILT","Steer"],
+        ["A","Boost"]
+      ],
+      note:"Avoid cones and collect coins."
+    },
+
+    target:{
+      controls:[
+        ["RIGHT STICK","Aim"],
+        ["A","Shoot"],
+        ["X","Shoot"],
+        ["FIRE","Shoot"]
+      ],
+      note:"Hit the targets to earn points."
+    },
+
+    balance:{
+      controls:[
+        ["LEFT STICK","Balance"],
+        ["TILT","Balance"]
+      ],
+      note:"Stay on the beam for as long as possible."
+    },
+
+    reaction:{
+      controls:[
+        ["A","React"],
+        ["X","React"],
+        ["SHAKE","React"]
+      ],
+      note:"Wait for green. Press only when it appears."
+    },
+
+    fruit:{
+      controls:[
+        ["RIGHT STICK","Move blade"],
+        ["A","Slash"],
+        ["X","Slash"],
+        ["R1","Slash"]
+      ],
+      note:"Slice fruit. Avoid bombs. Build combos."
+    },
+
+    platform:{
+      controls:[
+        ["LEFT STICK","Move"],
+        ["A","Jump"],
+        ["X","Jump"],
+        ["B","Dash"]
+      ],
+      note:"Collect mushrooms and avoid enemies."
+    },
+
+    fighter:{
+      controls:[
+        ["LEFT STICK","Move"],
+        ["A","Punch"],
+        ["B","Kick"],
+        ["X","Block"],
+        ["Y","Special"]
+      ],
+      note:"Defeat the other players in the arena."
+    },
+
+    neon:{
+      controls:[
+        ["LEFT STICK","Steer"],
+        ["A","Boost"],
+        ["X","Boost"]
+      ],
+      note:"Avoid traffic and use boost to score."
+    }
+  };
+
+
+  function renderGuide(id){
+
+    const guide=GUIDE[id];
+    const panel=$("game-guide");
+
+    if(!guide){
+      panel.classList.remove("visible");
+      return;
+    }
+
+    $("guide-controls").innerHTML="";
+
+    guide.controls.forEach(([key,action])=>{
+
+      const item=document.createElement("div");
+      item.className="guide-item";
+
+      const cap=document.createElement("span");
+      cap.className="keycap";
+
+      if(key==="A")cap.classList.add("a");
+      if(key==="B")cap.classList.add("b");
+      if(key==="X")cap.classList.add("x");
+      if(key==="Y")cap.classList.add("y");
+
+      cap.textContent=key;
+
+      const label=document.createElement("span");
+      label.textContent=action;
+
+      item.appendChild(cap);
+      item.appendChild(label);
+
+      $("guide-controls").appendChild(item);
+    });
+
+    $("guide-note").textContent=guide.note;
+    panel.classList.add("visible");
+  }
+
+
   function pick(id){
     G=id;
     send("phase",{phase,g:G});
@@ -889,8 +1105,6 @@ if(!qs.get("room")){
             a:p.a?1:0
           };
 
-          // New gamepad input from the phone.
-
           const incoming=p.pad||{};
 
           const buttons=Array.isArray(incoming.buttons)
@@ -904,8 +1118,6 @@ if(!qs.get("room")){
             ry:clamp(Number(incoming.ry)||0,-1,1),
             buttons
           };
-
-          // A and X can also trigger the legacy FIRE input.
 
           if(
             p.a||
@@ -970,8 +1182,6 @@ if(!qs.get("room")){
       online:true,
 
       in:{s:0,y:0,a:0},
-
-      // Gamepad state shared with future games.
 
       pad:{
         x:0,
@@ -1061,6 +1271,8 @@ if(!qs.get("room")){
 
     cancelAnimationFrame(raf);
 
+    $("game-guide").classList.remove("visible");
+
     show("h-home");
   };
 
@@ -1075,7 +1287,14 @@ if(!qs.get("room")){
       hit:0,
       idx:0,
       score:0,
-      fire:0
+      fire:0,
+      pad:{
+        x:0,
+        y:0,
+        rx:0,
+        ry:0,
+        buttons:[]
+      }
     }));
 
     let c=3;
@@ -1083,6 +1302,8 @@ if(!qs.get("room")){
     phase="count";
 
     send("phase",{phase,g:G});
+
+    $("game-guide").classList.remove("visible");
 
     show("h-count");
 
@@ -1124,6 +1345,8 @@ if(!qs.get("room")){
 
     phase="lobby";
 
+    $("game-guide").classList.remove("visible");
+
     players.forEach(q=>{
       if(q.id!=="kb")q.ready=false;
     });
@@ -1141,6 +1364,8 @@ if(!qs.get("room")){
     send("phase",{phase,g:G});
 
     show("h-game");
+
+    renderGuide(G);
 
     game={
       t0:performance.now(),
@@ -1189,8 +1414,6 @@ if(!qs.get("room")){
 
         p.kf=keys[" "];
 
-        // Keyboard gamepad mapping for single-player testing.
-
         p.pad={
           x:(keys.ArrowRight||keys.d?1:0)-
             (keys.ArrowLeft||keys.a?1:0),
@@ -1198,12 +1421,14 @@ if(!qs.get("room")){
           y:(keys.ArrowDown||keys.s?1:0)-
             (keys.ArrowUp||keys.w?1:0),
 
-          rx:0,
-          ry:0,
+          rx:(keys.l?1:0)-(keys.j?1:0),
+          ry:(keys.k?1:0)-(keys.i?1:0),
 
           buttons:[
             ...(keys[" "]?["A"]:[]),
             ...(keys.Shift?["B"]:[]),
+            ...(keys.e?["X"]:[]),
+            ...(keys.q?["Y"]:[]),
             ...(keys.Enter?["START"]:[])
           ]
         };
@@ -1451,6 +1676,8 @@ if(!qs.get("room")){
 
     phase="results";
 
+    $("game-guide").classList.remove("visible");
+
     const r=[...players.values()]
       .sort((a,b)=>b.score-a.score);
 
@@ -1506,8 +1733,6 @@ else{
   let useTouch=false;
   let loopT;
 
-  // Two analog sticks and a set of digital buttons.
-
   const pad={
     x:0,
     y:0,
@@ -1518,11 +1743,34 @@ else{
 
   $("mute").style.display="none";
 
+
+  /* GAME-SPECIFIC PHONE INSTRUCTIONS */
+
   const HELP={
-    racer:"Tilt to steer. You can also use the left stick.",
-    target:"Tilt to aim. Shake or press A to shoot.",
-    balance:"Tilt or use the left stick to keep your balance.",
-    reaction:"Wait for green, then shake or press A."
+
+    racer:
+      "Tilt or use the left stick to steer. Press A or X for boost.",
+
+    target:
+      "Use the right stick to aim. Press A or X to shoot. You can also shake the phone.",
+
+    balance:
+      "Tilt or use the left stick to balance your ball. Avoid falling off.",
+
+    reaction:
+      "Wait for the screen to turn green, then press A or X or shake the phone.",
+
+    fruit:
+      "Move the right stick to control your blade. Press A, X or R1 to slash. Avoid bombs.",
+
+    platform:
+      "Use the left stick to move. Press A or X to jump. Press B to dash. Collect mushrooms.",
+
+    fighter:
+      "Left stick moves. A punches, B kicks, X blocks and Y performs a special attack.",
+
+    neon:
+      "Use the left stick to steer. Press A or X to activate your boost."
   };
 
 
@@ -1532,6 +1780,11 @@ else{
 
     $("p-help").textContent=
       HELP[g]||"Use the sticks and action buttons to play.";
+
+    $("p-fire").style.display=
+      ["target","reaction"].includes(g)
+        ?"block"
+        :"none";
   };
 
 
@@ -1842,9 +2095,6 @@ else{
 
       const m=M.poll();
 
-      // Tilt is still available for the original games.
-      // The analog sticks are sent separately for gamepad games.
-
       let s=m.s;
 
       if(useTouch||!M.has){
@@ -1878,8 +2128,6 @@ else{
           rt:a&&goT
             ?Math.round(performance.now()-goT)
             :0,
-
-          // Full gamepad state.
 
           pad:{
             x:pad.x,
